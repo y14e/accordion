@@ -86,16 +86,16 @@ export default class Accordion {
     trigger.setAttribute('aria-label', trigger.getAttribute(`data-accordion-${open ? 'expanded' : 'collapsed'}-label`) ?? (trigger.getAttribute('aria-label') || ''));
     const index = this.triggerElements.indexOf(trigger);
     const content = this.contentElements[index];
-    const computed = getComputedStyle(content);
-    const start = !content.hidden ? computed.getPropertyValue('block-size') : '0';
+    const style = getComputedStyle(content);
+    const start = !content.hidden ? style.getPropertyValue('block-size') : '0';
     let animation = this.animations[index];
     animation?.cancel();
     content.hidden = false;
-    const end = open ? parseFloat(computed.getPropertyValue('block-size')) : 0;
+    const end = open ? parseFloat(style.getPropertyValue('block-size')) : 0;
     requestAnimationFrame(() => trigger.setAttribute('aria-expanded', String(open)));
     content.style.setProperty('overflow', 'clip');
     animation = this.animations[index] = content.animate(
-      { blockSize: [start, `${Math.max(parseFloat(computed.getPropertyValue('min-block-size')), Math.min(end, parseFloat(computed.getPropertyValue('max-block-size')) || end))}px`] },
+      { blockSize: [start, `${Math.max(parseFloat(style.getPropertyValue('min-block-size')), Math.min(end, parseFloat(style.getPropertyValue('max-block-size')) || end))}px`] },
       {
         duration: !match ? this.settings.animation.duration : 0,
         easing: this.settings.animation.easing,
