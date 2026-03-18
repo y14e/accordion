@@ -195,20 +195,17 @@ export default class Accordion {
     }
     this.destroyed = true;
     this.rootElement.removeAttribute('data-accordion-initialized');
-    const animations = this.animations.filter(Boolean);
-    if (animations.length) {
-      await Promise.all(
-        animations.map(async (animation) => {
-          if (animation) {
-            try {
-              await animation.finished;
-            } catch {}
-            animation.cancel();
-          }
-        }),
-      );
-    }
-    this.animations = [];
+    await Promise.all(
+      this.animations.map(async (animation) => {
+        if (!animation) {
+          return;
+        }
+        try {
+          await animation.finished;
+        } catch {}
+        animation.cancel();
+      }),
+    );
     this.eventController.abort();
   }
 }
