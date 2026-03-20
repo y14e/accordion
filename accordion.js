@@ -25,7 +25,7 @@ export default class Accordion {
     this.triggerElements = [...this.rootElement.querySelectorAll(`${this.settings.selector.trigger}${NOT_NESTED}`)];
     this.contentElements = [...this.rootElement.querySelectorAll(`${this.settings.selector.content}${NOT_NESTED}`)];
     this.animations = Array(this.triggerElements.length).fill(null);
-    this.eventController = new AbortController();
+    this.controller = new AbortController();
     this.destroyed = false;
     this.handleTriggerClick = this.handleTriggerClick.bind(this);
     this.handleTriggerKeyDown = this.handleTriggerKeyDown.bind(this);
@@ -37,7 +37,7 @@ export default class Accordion {
     if (!this.triggerElements.length || !this.contentElements.length) {
       return;
     }
-    const { signal } = this.eventController;
+    const { signal } = this.controller;
     this.triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
       trigger.setAttribute('aria-controls', (this.contentElements[i].id ||= `accordion-content-${id}`));
@@ -175,6 +175,7 @@ export default class Accordion {
     }
     this.destroyed = true;
     this.rootElement.removeAttribute('data-accordion-initialized');
+    this.controller.abort();
     await Promise.all(
       this.animations.map(async (animation) => {
         if (!animation) {
@@ -186,6 +187,5 @@ export default class Accordion {
         animation.cancel();
       }),
     );
-    this.eventController.abort();
   }
 }
