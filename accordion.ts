@@ -93,7 +93,7 @@ export default class Accordion {
   }
 
   private toggle(trigger: HTMLElement, open: boolean, match = false): void {
-    if (open.toString() === trigger.getAttribute('aria-expanded')) {
+    if (String(open) === trigger.getAttribute('aria-expanded')) {
       return;
     }
     const name = trigger.getAttribute('data-accordion-name');

@@ -73,7 +73,7 @@ export default class Accordion {
   }
 
   toggle(trigger, open, match = false) {
-    if (open.toString() === trigger.getAttribute('aria-expanded')) {
+    if (String(open) === trigger.getAttribute('aria-expanded')) {
       return;
     }
     const name = trigger.getAttribute('data-accordion-name');
