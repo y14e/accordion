@@ -196,10 +196,9 @@ export default class Accordion {
     this.destroyed = true;
     this.rootElement.removeAttribute('data-accordion-initialized');
     this.controller.abort();
-    const animations = this.animations;
     if (!force) {
-      await Promise.all(animations.map((animation) => animation?.finished.catch(() => {})));
+      await Promise.all(this.animations.map((animation) => animation?.finished.catch(() => {})));
     }
-    animations.forEach((animation) => animation?.cancel());
+    this.animations.forEach((animation) => animation?.cancel());
   }
 }
