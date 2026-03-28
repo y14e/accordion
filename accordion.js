@@ -1,8 +1,6 @@
 export default class Accordion {
   constructor(root, options = {}) {
-    if (!root) {
-      return;
-    }
+    if (!root) return;
     this.rootElement = root;
     this.defaults = {
       animation: {
@@ -34,9 +32,7 @@ export default class Accordion {
   }
 
   initialize() {
-    if (!this.triggerElements.length || !this.contentElements.length) {
-      return;
-    }
+    if (!this.triggerElements.length || !this.contentElements.length) return;
     const { signal } = this.controller;
     this.triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
@@ -73,9 +69,7 @@ export default class Accordion {
   }
 
   toggle(trigger, open, match = false) {
-    if (String(open) === trigger.getAttribute('aria-expanded')) {
-      return;
-    }
+    if (String(open) === trigger.getAttribute('aria-expanded')) return;
     const name = trigger.getAttribute('data-accordion-name');
     if (name) {
       const current = this.rootElement.querySelector(`[aria-expanded="true"][data-accordion-name="${name}"]`);
@@ -119,9 +113,7 @@ export default class Accordion {
 
   handleTriggerKeyDown(event) {
     const { key } = event;
-    if (!['Enter', ' ', 'End', 'Home', 'ArrowUp', 'ArrowDown'].includes(key)) {
-      return;
-    }
+    if (!['Enter', ' ', 'End', 'Home', 'ArrowUp', 'ArrowDown'].includes(key)) return;
     event.preventDefault();
     event.stopPropagation();
     const focusables = this.triggerElements.filter(this.isFocusable);
@@ -170,9 +162,7 @@ export default class Accordion {
   }
 
   async destroy(force = false) {
-    if (this.destroyed) {
-      return;
-    }
+    if (this.destroyed) return;
     this.destroyed = true;
     this.rootElement.removeAttribute('data-accordion-initialized');
     this.controller.abort();
