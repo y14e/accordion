@@ -101,7 +101,7 @@ export default class Accordion {
       if (!open) {
         content.setAttribute('hidden', 'until-found');
       }
-      ['block-size', 'overflow'].forEach((name) => content.style.removeProperty(name));
+      ['block-size', 'overflow'].forEach((n) => content.style.removeProperty(n));
     });
   }
 
@@ -120,7 +120,7 @@ export default class Accordion {
     const focusables = this.triggerElements.filter(Accordion.isFocusable);
     const active = Accordion.getActiveElement();
     const currentIndex = focusables.indexOf(active);
-    const length = focusables.length;
+    const { length } = focusables;
     let newIndex = currentIndex;
     switch (key) {
       case 'Enter':
