@@ -36,13 +36,15 @@ export default class Accordion {
     const { signal } = this.controller;
     this.triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
-      trigger.setAttribute('aria-controls', (this.contentElements[i].id ||= `accordion-content-${id}`));
+      const content = this.contentElements[i];
+      content.id ||= `accordion-content-${id}`;
+      trigger.setAttribute('aria-controls', content.id);
       if (!trigger.hasAttribute('aria-expanded')) {
         trigger.setAttribute('aria-expanded', 'false');
       }
       trigger.id ||= `accordion-trigger-${id}`;
-      trigger.setAttribute('tabindex', Accordion.isFocusable(trigger) ? '0' : '-1');
-      if (!Accordion.isFocusable(trigger)) {
+      trigger.setAttribute('tabindex', this.isFocusable(trigger) ? '0' : '-1');
+      if (!this.isFocusable(trigger)) {
         trigger.style.setProperty('pointer-events', 'none');
       }
       trigger.addEventListener('click', this.handleTriggerClick, { signal });
@@ -56,15 +58,15 @@ export default class Accordion {
     this.rootElement.setAttribute('data-accordion-initialized', '');
   }
 
-  static getActiveElement() {
+  getActiveElement() {
     let active = document.activeElement;
-    while (active && active.shadowRoot?.activeElement) {
+    while (active?.shadowRoot?.activeElement) {
       active = active.shadowRoot.activeElement;
     }
     return active;
   }
 
-  static isFocusable(element) {
+  isFocusable(element) {
     return element.getAttribute('aria-disabled') !== 'true' && !element.hasAttribute('disabled');
   }
 
@@ -101,7 +103,7 @@ export default class Accordion {
       if (!open) {
         content.setAttribute('hidden', 'until-found');
       }
-      ['block-size', 'overflow'].forEach((n) => content.style.removeProperty(n));
+      ['block-size', 'overflow'].forEach((name) => void content.style.removeProperty(name));
     });
   }
 
@@ -117,8 +119,8 @@ export default class Accordion {
     if (!['Enter', ' ', 'End', 'Home', 'ArrowUp', 'ArrowDown'].includes(key)) return;
     event.preventDefault();
     event.stopPropagation();
-    const focusables = this.triggerElements.filter(Accordion.isFocusable);
-    const active = Accordion.getActiveElement();
+    const focusables = this.triggerElements.filter(this.isFocusable);
+    const active = this.getActiveElement();
     const currentIndex = focusables.indexOf(active);
     const { length } = focusables;
     let newIndex = currentIndex;
@@ -172,6 +174,6 @@ export default class Accordion {
     if (!force) {
       await Promise.all(this.animations.map((animation) => animation?.finished.catch(() => {})));
     }
-    this.animations.forEach((animation) => animation?.cancel());
+    this.animations.forEach((animation) => void animation?.cancel());
   }
 }
