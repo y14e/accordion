@@ -60,10 +60,10 @@ export default class Accordion {
 
   getActiveElement() {
     let active = document.activeElement;
-    while (active?.shadowRoot?.activeElement) {
+    while (active instanceof HTMLElement && active.shadowRoot?.activeElement) {
       active = active.shadowRoot.activeElement;
     }
-    return active;
+    return active instanceof HTMLElement ? active : null;
   }
 
   isFocusable(element) {
@@ -117,6 +117,7 @@ export default class Accordion {
     event.preventDefault();
     event.stopPropagation();
     const trigger = event.currentTarget;
+    if (!(trigger instanceof HTMLElement)) return;
     this.toggle(trigger, trigger.getAttribute('aria-expanded') === 'false');
   }
 
@@ -127,8 +128,8 @@ export default class Accordion {
     event.stopPropagation();
     const focusables = this.triggerElements.filter(this.isFocusable);
     const active = this.getActiveElement();
+    if (!active) return;
     const currentIndex = focusables.indexOf(active);
-    const { length } = focusables;
     let newIndex = currentIndex;
     switch (key) {
       case 'Enter':
@@ -136,23 +137,25 @@ export default class Accordion {
         active.click();
         return;
       case 'End':
-        newIndex = length - 1;
+        newIndex = -1;
         break;
       case 'Home':
         newIndex = 0;
         break;
       case 'ArrowUp':
-        newIndex = (currentIndex - 1 + length) % length;
+        newIndex = currentIndex - 1;
         break;
       case 'ArrowDown':
-        newIndex = (currentIndex + 1) % length;
+        newIndex = (currentIndex + 1) % focusables.length;
         break;
     }
-    focusables[newIndex].focus();
+    focusables.at(newIndex)?.focus();
   }
 
   handleContentBeforeMatch(event) {
-    const trigger = this.triggerElements[this.contentElements.indexOf(event.currentTarget)];
+    const content = event.currentTarget;
+    if (!(content instanceof HTMLElement)) return;
+    const trigger = this.triggerElements[this.contentElements.indexOf(content)];
     if (trigger.getAttribute('aria-expanded') === 'false') {
       this.toggle(trigger, true, true);
     }
