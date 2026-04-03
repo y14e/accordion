@@ -1,9 +1,3 @@
-type AccordionEntry = {
-  animation: Animation | null;
-  content: HTMLElement;
-  trigger: HTMLElement;
-};
-
 interface AccordionOptions {
   animation: {
     duration: number;
@@ -21,7 +15,7 @@ export default class Accordion {
   private settings!: AccordionOptions;
   private triggerElements!: NodeListOf<HTMLElement>;
   private contentElements!: NodeListOf<HTMLElement>;
-  private entries!: WeakMap<HTMLElement, AccordionEntry>;
+  private entries!: WeakMap<HTMLElement, { animation: Animation | null; content: HTMLElement; trigger: HTMLElement }>;
   private controller!: AbortController;
   private destroyed!: boolean;
 
@@ -84,7 +78,7 @@ export default class Accordion {
     this.triggerElements.forEach((trigger, i) => {
       const content = this.contentElements[i];
       if (!content) return;
-      const entry: AccordionEntry = { animation: null, content, trigger };
+      const entry = { animation: null, content, trigger };
       this.entries.set(trigger, entry);
       this.entries.set(content, entry);
     });
