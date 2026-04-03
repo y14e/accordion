@@ -1,4 +1,4 @@
-# accordion.js
+# accordion.js (v2)
 WAI-ARIA compliant [accordion](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) pattern implementation in JS.
 ## Installation
 ```js
