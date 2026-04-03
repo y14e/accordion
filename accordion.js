@@ -78,6 +78,8 @@ export default class Accordion {
   }
 
   toggle(trigger, open, match = false) {
+    const entry = this.entries.get(trigger);
+    if (!entry) return;
     if (String(open) === trigger.getAttribute('aria-expanded')) return;
     const name = trigger.getAttribute('data-accordion-name');
     if (name) {
@@ -87,8 +89,6 @@ export default class Accordion {
       }
     }
     trigger.setAttribute('aria-label', trigger.getAttribute(`data-accordion-${open ? 'expanded' : 'collapsed'}-label`) ?? (trigger.getAttribute('aria-label') || ''));
-    const entry = this.entries.get(trigger);
-    if (!entry) return;
     const { content } = entry;
     const startSize = content.hidden ? 0 : content.offsetHeight;
     if (content.hidden) {
@@ -199,7 +199,7 @@ export default class Accordion {
       this.triggerElements.forEach((trigger) => {
         const entry = this.entries.get(trigger);
         if (entry?.animation) {
-          promises.push(entry.animation.finished.then(() => {}).catch(() => {}));
+          promises.push(entry.animation.finished.catch(() => {}).then(() => {}));
         }
       });
       await Promise.all(promises);
