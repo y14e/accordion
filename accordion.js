@@ -1,6 +1,6 @@
 export default class Accordion {
   constructor(root, options = {}) {
-    if (!root) return;
+    if (!root) throw new Error('Root element missing');
     this.rootElement = root;
     this.defaults = {
       animation: {
@@ -25,16 +25,14 @@ export default class Accordion {
     this.entries = new WeakMap();
     this.controller = new AbortController();
     this.destroyed = false;
-    this.handleTriggerClick = this.handleTriggerClick.bind(this);
-    this.handleTriggerKeyDown = this.handleTriggerKeyDown.bind(this);
-    this.handleContentBeforeMatch = this.handleContentBeforeMatch.bind(this);
     this.initialize();
   }
 
   initialize() {
-    if (!this.triggerElements.length || !this.contentElements.length) return;
+    if (this.triggerElements.length === 0 || this.contentElements.length === 0) return;
     const { signal } = this.controller;
-    this.triggerElements.forEach((trigger, i) => {
+    for (let i = 0; i < this.triggerElements.length; i++) {
+      const trigger = this.triggerElements[i];
       const id = Math.random().toString(36).slice(-8);
       const content = this.contentElements[i];
       if (!content) return;
@@ -48,21 +46,22 @@ export default class Accordion {
       if (!this.isFocusable(trigger)) {
         trigger.style.setProperty('pointer-events', 'none');
       }
-      trigger.addEventListener('click', this.handleTriggerClick, { signal });
-      trigger.addEventListener('keydown', this.handleTriggerKeyDown, { signal });
-    });
-    this.contentElements.forEach((content, i) => {
+      trigger.addEventListener('click', this.handleTriggerClick.bind(this), { signal });
+      trigger.addEventListener('keydown', this.handleTriggerKeyDown.bind(this), { signal });
+    }
+    for (let i = 0; i < this.contentElements.length; i++) {
+      const content = this.contentElements[i];
       content.setAttribute('aria-labelledby', `${content.getAttribute('aria-labelledby') ?? ''} ${this.triggerElements[i].id}`.trim());
       content.setAttribute('role', 'region');
-      content.addEventListener('beforematch', this.handleContentBeforeMatch, { signal });
-    });
-    this.triggerElements.forEach((trigger, i) => {
+      content.addEventListener('beforematch', this.handleContentBeforeMatch.bind(this), { signal });
+    }
+    for (let i = 0; i < this.triggerElements.length; i++) {
+      const trigger = this.triggerElements[i];
       const content = this.contentElements[i];
       if (!content) return;
       const entry = { animation: null, content, trigger };
-      this.entries.set(trigger, entry);
-      this.entries.set(content, entry);
-    });
+      this.entries.set(trigger, entry).set(content, entry);
+    }
     this.rootElement.setAttribute('data-accordion-initialized', '');
   }
 
@@ -137,11 +136,11 @@ export default class Accordion {
     event.preventDefault();
     event.stopPropagation();
     const focusables = [];
-    this.triggerElements.forEach((trigger) => {
+    for (const trigger of this.triggerElements) {
       if (this.isFocusable(trigger)) {
         focusables.push(trigger);
       }
-    });
+    }
     const active = this.getActiveElement();
     if (!active) return;
     const currentIndex = focusables.indexOf(active);
@@ -192,18 +191,20 @@ export default class Accordion {
   async destroy(force = false) {
     if (this.destroyed) return;
     this.destroyed = true;
-    this.rootElement.removeAttribute('data-accordion-initialized');
     this.controller.abort();
+    this.rootElement.removeAttribute('data-accordion-initialized');
     if (!force) {
       const promises = [];
-      this.triggerElements.forEach((trigger) => {
+      for (const trigger of this.triggerElements) {
         const entry = this.entries.get(trigger);
         if (entry?.animation) {
           promises.push(entry.animation.finished.catch(() => {}).then(() => {}));
         }
-      });
+      }
       await Promise.all(promises);
     }
-    this.triggerElements.forEach((trigger) => this.entries.get(trigger)?.animation?.cancel());
+    for (const trigger of this.triggerElements) {
+      this.entries.get(trigger)?.animation?.cancel();
+    }
   }
 }
