@@ -13,8 +13,8 @@ export default class Accordion {
       },
     };
     this.settings = {
-      animation: { ...this.defaults.animation, ...options.animation },
-      selector: { ...this.defaults.selector, ...options.selector },
+      animation: { ...this.defaults.animation, ...(options.animation ?? {}) },
+      selector: { ...this.defaults.selector, ...(options.selector ?? {}) },
     };
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
       this.settings.animation.duration = 0;
