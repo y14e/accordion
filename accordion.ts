@@ -1,15 +1,17 @@
 interface AccordionOptions {
-  animation: {
-    duration: number;
-    easing: string;
+  animation?: {
+    duration?: number;
+    easing?: string;
   };
-  selector: {
-    content: string;
-    trigger: string;
+  selector?: {
+    content?: string;
+    trigger?: string;
   };
 }
 
-type AccordionEntry = {
+type DeepRequired<T> = T extends (...args: unknown[]) => unknown ? T : T extends readonly unknown[] ? { [K in keyof T]: DeepRequired<NonNullable<T[K]>> } : T extends object ? { [K in keyof T]-?: DeepRequired<NonNullable<T[K]>> } : NonNullable<T>;
+
+type AccordionBinding = {
   trigger: HTMLElement;
   content: HTMLElement;
   animation: Animation | null;
@@ -17,27 +19,26 @@ type AccordionEntry = {
 
 export default class Accordion {
   private readonly rootElement: HTMLElement;
-  private readonly defaults: AccordionOptions;
-  private readonly settings: AccordionOptions;
+  private readonly defaults: DeepRequired<AccordionOptions> = {
+    animation: {
+      duration: 300,
+      easing: 'ease',
+    },
+    selector: {
+      content: ':has(> [data-accordion-trigger]) + *',
+      trigger: '[data-accordion-trigger]',
+    },
+  };
+  private readonly settings: DeepRequired<AccordionOptions>;
   private readonly triggerElements: NodeListOf<HTMLElement>;
   private readonly contentElements: NodeListOf<HTMLElement>;
-  private readonly entries: WeakMap<HTMLElement, AccordionEntry> = new WeakMap();
-  private readonly controller = new AbortController();
+  private readonly bindingMap: WeakMap<HTMLElement, AccordionBinding> = new WeakMap();
+  private readonly eventController = new AbortController();
   private destroyed = false;
 
-  constructor(root: HTMLElement, options: Partial<AccordionOptions> = {}) {
+  constructor(root: HTMLElement, options: AccordionOptions = {}) {
     if (!root) throw new Error('Root element missing');
     this.rootElement = root;
-    this.defaults = {
-      animation: {
-        duration: 300,
-        easing: 'ease',
-      },
-      selector: {
-        content: ':has(> [data-accordion-trigger]) + *',
-        trigger: '[data-accordion-trigger]',
-      },
-    };
     this.settings = {
       animation: { ...this.defaults.animation, ...(options.animation ?? {}) },
       selector: { ...this.defaults.selector, ...(options.selector ?? {}) },
@@ -45,22 +46,22 @@ export default class Accordion {
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
       this.settings.animation.duration = 0;
     }
-    const { selector } = this.settings;
-    const NOT_NESTED = `:not(:scope ${selector.content} *)`;
-    this.triggerElements = this.rootElement.querySelectorAll(`${selector.trigger}${NOT_NESTED}`);
-    this.contentElements = this.rootElement.querySelectorAll(`${selector.content}${NOT_NESTED}`);
+    const { trigger, content } = this.settings.selector;
+    const NOT_NESTED = `:not(:scope ${content} *)`;
+    this.triggerElements = this.rootElement.querySelectorAll(`${trigger}${NOT_NESTED}`);
+    this.contentElements = this.rootElement.querySelectorAll(`${content}${NOT_NESTED}`);
     if (this.triggerElements.length === 0 || this.contentElements.length === 0) throw new Error('Trigger or content element missing');
     this.initialize();
   }
 
   open(trigger: HTMLElement): void {
-    if (this.entries.has(trigger)) {
+    if (this.bindingMap.has(trigger)) {
       this.toggle(trigger, true);
     }
   }
 
   close(trigger: HTMLElement): void {
-    if (this.entries.has(trigger)) {
+    if (this.bindingMap.has(trigger)) {
       this.toggle(trigger, false);
     }
   }
@@ -68,25 +69,25 @@ export default class Accordion {
   async destroy(force = false) {
     if (this.destroyed) return;
     this.destroyed = true;
-    this.controller.abort();
+    this.eventController.abort();
     this.rootElement.removeAttribute('data-accordion-initialized');
     if (!force) {
       const promises: Promise<void>[] = [];
       for (const trigger of this.triggerElements) {
-        const entry = this.entries.get(trigger);
-        if (entry?.animation) {
-          promises.push(entry.animation.finished.catch(() => {}).then(() => {}));
+        const binding = this.bindingMap.get(trigger);
+        if (binding?.animation) {
+          promises.push(binding.animation.finished.catch(() => {}).then(() => {}));
         }
       }
       await Promise.all(promises);
     }
     for (const trigger of this.triggerElements) {
-      this.entries.get(trigger)?.animation?.cancel();
+      this.bindingMap.get(trigger)?.animation?.cancel();
     }
   }
 
   private initialize(): void {
-    const { signal } = this.controller;
+    const { signal } = this.eventController;
     for (let i = 0, l = this.triggerElements.length; i < l; i++) {
       const trigger = this.triggerElements[i];
       const id = Math.random().toString(36).slice(-8);
@@ -115,9 +116,9 @@ export default class Accordion {
       const trigger = this.triggerElements[i];
       const content = this.contentElements[i];
       if (!content) continue;
-      const entry = this.createEntry(trigger, content);
-      this.entries.set(trigger, entry);
-      this.entries.set(content, entry);
+      const binding = this.createBinding(trigger, content);
+      this.bindingMap.set(trigger, binding);
+      this.bindingMap.set(content, binding);
     }
     this.rootElement.setAttribute('data-accordion-initialized', '');
   }
@@ -169,16 +170,16 @@ export default class Accordion {
   private handleContentBeforeMatch = (event: Event): void => {
     const content = event.currentTarget;
     if (!(content instanceof HTMLElement)) return;
-    const entry = this.entries.get(content);
-    if (!entry) return;
-    if (entry.trigger.getAttribute('aria-expanded') === 'false') {
-      this.toggle(entry.trigger, true, true);
+    const binding = this.bindingMap.get(content);
+    if (!binding) return;
+    if (binding.trigger.getAttribute('aria-expanded') === 'false') {
+      this.toggle(binding.trigger, true, true);
     }
   };
 
   private toggle(trigger: HTMLElement, open: boolean, match = false): void {
-    const entry = this.entries.get(trigger);
-    if (!entry) return;
+    const binding = this.bindingMap.get(trigger);
+    if (!binding) return;
     if (String(open) === trigger.getAttribute('aria-expanded')) return;
     const name = trigger.getAttribute('data-accordion-name');
     if (name) {
@@ -188,22 +189,22 @@ export default class Accordion {
       }
     }
     trigger.setAttribute('aria-label', trigger.getAttribute(`data-accordion-${open ? 'expanded' : 'collapsed'}-label`) ?? (trigger.getAttribute('aria-label') || ''));
-    const { content } = entry;
+    const { content } = binding;
     const startSize = content.hidden ? 0 : content.offsetHeight;
     if (content.hidden) {
       content.hidden = false;
     }
     const endSize = open ? content.scrollHeight : 0;
-    let { animation } = entry;
+    let { animation } = binding;
     animation?.cancel();
     content.style.setProperty('overflow', 'clip');
     const { duration, easing } = this.settings.animation;
     animation = content.animate({ blockSize: [`${startSize}px`, `${endSize}px`] }, { duration: !match ? duration : 0, easing });
-    entry.animation = animation;
+    binding.animation = animation;
     trigger.setAttribute('aria-expanded', String(open));
     const cleanupAnimation = () => {
-      if (entry.animation === animation) {
-        entry.animation = null;
+      if (binding.animation === animation) {
+        binding.animation = null;
       }
     };
     animation.addEventListener('cancel', cleanupAnimation);
@@ -216,7 +217,7 @@ export default class Accordion {
     });
   }
 
-  private createEntry(trigger: HTMLElement, content: HTMLElement): AccordionEntry {
+  private createBinding(trigger: HTMLElement, content: HTMLElement): AccordionBinding {
     return { trigger, content, animation: null };
   }
 
