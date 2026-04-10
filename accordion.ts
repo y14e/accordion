@@ -199,10 +199,7 @@ export default class Accordion {
 
   private toggle(trigger: HTMLElement, open: boolean, match = false): void {
     const binding = this.bindingMap.get(trigger);
-    if (!binding) {
-      return;
-    }
-    if (String(open) === trigger.getAttribute('aria-expanded')) {
+    if (!binding || String(open) === trigger.getAttribute('aria-expanded')) {
       return;
     }
     const name = trigger.getAttribute('data-accordion-name');

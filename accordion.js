@@ -175,10 +175,7 @@ export default class Accordion {
 
   toggle(trigger, open, match = false) {
     const binding = this.bindingMap.get(trigger);
-    if (!binding) {
-      return;
-    }
-    if (String(open) === trigger.getAttribute('aria-expanded')) {
+    if (!binding || String(open) === trigger.getAttribute('aria-expanded')) {
       return;
     }
     const name = trigger.getAttribute('data-accordion-name');
