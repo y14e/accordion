@@ -77,11 +77,11 @@ export default class Accordion {
   }
 
   async destroy(force = false): Promise<void> {
-    if (this.destroyed || !this.#triggerElements || !this.#bindings || !this.#controller) {
+    if (this.destroyed || !this.#triggerElements || !this.#bindings) {
       return;
     }
     this.destroyed = true;
-    this.#controller.abort();
+    this.#controller?.abort();
     this.#controller = null;
     this.rootElement.removeAttribute('data-accordion-initialized');
     if (!force) {
