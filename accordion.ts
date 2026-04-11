@@ -9,7 +9,7 @@ interface AccordionOptions {
   };
 }
 
-type DeepRequired<T> = T extends (...args: unknown[]) => unknown ? T : T extends readonly unknown[] ? { [K in keyof T]: DeepRequired<NonNullable<T[K]>> } : T extends object ? { [K in keyof T]-?: DeepRequired<NonNullable<T[K]>> } : NonNullable<T>;
+type DeepRequired<T> = T extends (...args: unknown[]) => unknown ? T : T extends readonly unknown[] ? T : T extends object ? { [K in keyof T]-?: DeepRequired<NonNullable<T[K]>> } : NonNullable<T>;
 
 type AccordionBinding = {
   trigger: HTMLElement;
@@ -19,7 +19,7 @@ type AccordionBinding = {
 
 export default class Accordion {
   private readonly rootElement: HTMLElement;
-  private readonly defaults: DeepRequired<AccordionOptions> = {
+  private readonly defaults = {
     animation: {
       duration: 300,
       easing: 'ease',
@@ -28,7 +28,7 @@ export default class Accordion {
       content: ':has(> [data-accordion-trigger]) + *',
       trigger: '[data-accordion-trigger]',
     },
-  };
+  } satisfies DeepRequired<AccordionOptions>;
   private readonly settings: DeepRequired<AccordionOptions>;
   #triggerElements: NodeListOf<HTMLElement> | null;
   #contentElements: NodeListOf<HTMLElement> | null;
