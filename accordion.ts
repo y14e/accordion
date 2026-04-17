@@ -137,7 +137,7 @@ export default class Accordion {
 
     const { signal } = this.#controller;
 
-    for (let i = 0; i < this.#triggerElements.length; i++) {
+    for (let i = 0, l = this.#triggerElements.length; i < l; i++) {
       const trigger = this.#triggerElements[i];
       const id = Math.random().toString(36).slice(-8);
       const content = this.#contentElements[i];
@@ -161,7 +161,7 @@ export default class Accordion {
       });
     }
 
-    for (let i = 0; i < this.#contentElements.length; i++) {
+    for (let i = 0, l = this.#contentElements.length; i < l; i++) {
       const content = this.#contentElements[i];
 
       content.setAttribute(
@@ -178,7 +178,7 @@ export default class Accordion {
       });
     }
 
-    for (let i = 0; i < this.#triggerElements.length; i++) {
+    for (let i = 0, l = this.#triggerElements.length; i < l; i++) {
       const trigger = this.#triggerElements[i];
       const content = this.#contentElements[i];
       const binding = this.#createBinding(trigger, content);
