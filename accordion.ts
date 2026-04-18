@@ -45,7 +45,6 @@ export default class Accordion {
     }
 
     this.#rootElement = root;
-
     this.#settings = {
       animation: { ...this.#defaults.animation, ...(options.animation ?? {}) },
       selector: { ...this.#defaults.selector, ...(options.selector ?? {}) },
@@ -57,11 +56,9 @@ export default class Accordion {
 
     const { trigger, content } = this.#settings.selector;
     const NOT_NESTED = `:not(:scope ${content} *)`;
-
     this.#triggerElements = this.#rootElement.querySelectorAll(
       `${trigger}${NOT_NESTED}`,
     );
-
     this.#contentElements = this.#rootElement.querySelectorAll(
       `${content}${NOT_NESTED}`,
     );
@@ -91,10 +88,8 @@ export default class Accordion {
     }
 
     this.#destroyed = true;
-
     this.#controller?.abort();
     this.#controller = null;
-
     this.#rootElement.removeAttribute('data-accordion-initialized');
 
     if (!force) {
@@ -136,7 +131,6 @@ export default class Accordion {
       const trigger = this.#triggerElements[i];
       const id = Math.random().toString(36).slice(-8);
       const content = this.#contentElements[i];
-
       content.id ||= `accordion-content-${id}`;
       trigger.setAttribute('aria-controls', content.id);
       trigger.setAttribute(
@@ -158,16 +152,13 @@ export default class Accordion {
 
     for (let i = 0, l = this.#contentElements.length; i < l; i++) {
       const content = this.#contentElements[i];
-
       content.setAttribute(
         'aria-labelledby',
         `${content.getAttribute('aria-labelledby') ?? ''} ${
           this.#triggerElements[i].id
         }`.trim(),
       );
-
       content.setAttribute('role', 'region');
-
       content.addEventListener('beforematch', this.#onContentBeforeMatch, {
         signal,
       });
@@ -177,7 +168,6 @@ export default class Accordion {
       const trigger = this.#triggerElements[i];
       const content = this.#contentElements[i];
       const binding = this.#createBinding(trigger, content);
-
       this.#bindings.set(trigger, binding);
       this.#bindings.set(content, binding);
     }
@@ -188,7 +178,6 @@ export default class Accordion {
   #onTriggerClick = (event: Event): void => {
     event.preventDefault();
     event.stopPropagation();
-
     const trigger = event.currentTarget;
 
     if (trigger instanceof HTMLElement) {
@@ -209,7 +198,6 @@ export default class Accordion {
 
     event.preventDefault();
     event.stopPropagation();
-
     const focusables: HTMLElement[] = [];
 
     for (const trigger of this.#triggerElements) {
@@ -307,7 +295,6 @@ export default class Accordion {
     );
 
     const { content } = binding;
-
     const startSize = content.hidden ? 0 : content.offsetHeight;
 
     if (content.hidden) {
@@ -315,22 +302,15 @@ export default class Accordion {
     }
 
     const endSize = open ? content.scrollHeight : 0;
-
     binding.animation?.cancel();
-
     content.style.setProperty('overflow', 'clip');
-
     const { duration, easing } = this.#settings.animation;
-
     const animation = content.animate(
       { blockSize: [`${startSize}px`, `${endSize}px`] },
       { duration: match ? 0 : duration, easing },
     );
-
     binding.animation = animation;
-
     trigger.setAttribute('aria-expanded', String(open));
-
     const cleanup = (): void => {
       if (binding.animation === animation) {
         binding.animation = null;
@@ -342,9 +322,7 @@ export default class Accordion {
     }
 
     const { signal } = this.#controller;
-
     animation.addEventListener('cancel', cleanup, { once: true, signal });
-
     animation.addEventListener(
       'finish',
       (): void => {
@@ -355,7 +333,6 @@ export default class Accordion {
         }
 
         const { style } = content;
-
         style.removeProperty('block-size');
         style.removeProperty('overflow');
       },
@@ -395,7 +372,6 @@ export default class Accordion {
       const done = (): void => {
         resolve();
       };
-
       animation.addEventListener('cancel', done, { once: true });
       animation.addEventListener('finish', done, { once: true });
     });
