@@ -25,7 +25,6 @@ type Binding = {
 
 export default class Accordion {
   #rootElement: HTMLElement;
-
   #defaults = {
     animation: { duration: 300, easing: 'ease' },
     selector: {
@@ -33,15 +32,11 @@ export default class Accordion {
       trigger: '[data-accordion-trigger]',
     },
   } satisfies DeepRequired<AccordionOptions>;
-
   #settings: DeepRequired<AccordionOptions>;
-
   #triggerElements: NodeListOf<HTMLElement> | null;
   #contentElements: NodeListOf<HTMLElement> | null;
-
   #bindings: WeakMap<HTMLElement, Binding> | null = new WeakMap();
   #controller: AbortController | null = new AbortController();
-
   #destroyed = false;
 
   constructor(root: HTMLElement, options: AccordionOptions = {}) {
