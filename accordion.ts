@@ -291,6 +291,7 @@ export default class Accordion {
     );
     binding.animation = animation;
     trigger.setAttribute('aria-expanded', String(open));
+
     const cleanup = (): void => {
       if (binding.animation === animation) {
         binding.animation = null;
@@ -349,6 +350,7 @@ export default class Accordion {
       const done = (): void => {
         resolve();
       };
+
       animation.addEventListener('cancel', done, { once: true });
       animation.addEventListener('finish', done, { once: true });
     });
