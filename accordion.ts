@@ -56,12 +56,8 @@ export default class Accordion {
 
     const { trigger, content } = this.#settings.selector;
     const NOT_NESTED = `:not(:scope ${content} *)`;
-    this.#triggerElements = this.#rootElement.querySelectorAll(
-      `${trigger}${NOT_NESTED}`,
-    );
-    this.#contentElements = this.#rootElement.querySelectorAll(
-      `${content}${NOT_NESTED}`,
-    );
+    this.#triggerElements = this.#rootElement.querySelectorAll(`${trigger}${NOT_NESTED}`);
+    this.#contentElements = this.#rootElement.querySelectorAll(`${content}${NOT_NESTED}`);
 
     if (!this.#triggerElements.length || !this.#contentElements.length) {
       throw new Error('Trigger or content element missing.');
@@ -116,12 +112,7 @@ export default class Accordion {
   }
 
   #initialize(): void {
-    if (
-      !this.#triggerElements ||
-      !this.#contentElements ||
-      !this.#bindings ||
-      !this.#controller
-    ) {
+    if (!this.#triggerElements || !this.#contentElements || !this.#bindings || !this.#controller) {
       return;
     }
 
@@ -133,10 +124,7 @@ export default class Accordion {
       const content = this.#contentElements[i];
       content.id ||= `accordion-content-${id}`;
       trigger.setAttribute('aria-controls', content.id);
-      trigger.setAttribute(
-        'aria-expanded',
-        trigger.getAttribute('aria-expanded') ?? 'false',
-      );
+      trigger.setAttribute('aria-expanded', trigger.getAttribute('aria-expanded') ?? 'false');
       trigger.id ||= `accordion-trigger-${id}`;
       trigger.setAttribute('tabindex', this.#isFocusable(trigger) ? '0' : '-1');
 
@@ -154,14 +142,10 @@ export default class Accordion {
       const content = this.#contentElements[i];
       content.setAttribute(
         'aria-labelledby',
-        `${content.getAttribute('aria-labelledby') ?? ''} ${
-          this.#triggerElements[i].id
-        }`.trim(),
+        `${content.getAttribute('aria-labelledby') ?? ''} ${this.#triggerElements[i].id}`.trim(),
       );
       content.setAttribute('role', 'region');
-      content.addEventListener('beforematch', this.#onContentBeforeMatch, {
-        signal,
-      });
+      content.addEventListener('beforematch', this.#onContentBeforeMatch, { signal });
     }
 
     for (let i = 0, l = this.#triggerElements.length; i < l; i++) {
@@ -287,9 +271,7 @@ export default class Accordion {
 
     trigger.setAttribute(
       'aria-label',
-      trigger.getAttribute(
-        `data-accordion-${open ? 'expanded' : 'collapsed'}-label`,
-      ) ??
+      trigger.getAttribute(`data-accordion-${open ? 'expanded' : 'collapsed'}-label`) ??
         trigger.getAttribute('aria-label') ??
         '',
     );
@@ -355,10 +337,7 @@ export default class Accordion {
   }
 
   #isFocusable(element: HTMLElement): boolean {
-    return (
-      element.getAttribute('aria-disabled') !== 'true' &&
-      !element.hasAttribute('disabled')
-    );
+    return element.getAttribute('aria-disabled') !== 'true' && !element.hasAttribute('disabled');
   }
 
   #waitAnimation(animation: Animation): Promise<void> {
