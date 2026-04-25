@@ -31,7 +31,7 @@ export default class Accordion {
       content: ':has(> [data-accordion-trigger]) + *',
       trigger: '[data-accordion-trigger]',
     },
-  } satisfies DeepRequired<AccordionOptions>;
+  };
   #settings: DeepRequired<AccordionOptions>;
   #triggerElements: HTMLElement[] | null;
   #contentElements: HTMLElement[] | null;
