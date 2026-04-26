@@ -41,7 +41,7 @@ export default class Accordion {
 
   constructor(root: HTMLElement, options: AccordionOptions = {}) {
     if (!root) {
-      throw new Error('Root element missing.');
+      throw new Error('Root element missing');
     }
 
     this.#rootElement = root;
@@ -60,7 +60,7 @@ export default class Accordion {
     this.#contentElements = [...this.#rootElement.querySelectorAll<HTMLElement>(`${content}${NOT_NESTED}`)];
 
     if (this.#triggerElements.length === 0 || this.#contentElements.length === 0) {
-      throw new Error('Trigger or content element missing.');
+      throw new Error('Trigger or content element missing');
     }
 
     this.#initialize();
