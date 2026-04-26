@@ -119,9 +119,14 @@ export default class Accordion {
     const { signal } = this.#controller;
 
     for (let i = 0, l = this.#triggerElements.length; i < l; i++) {
-      const trigger = this.#triggerElements[i] as HTMLElement;
+      const trigger = this.#triggerElements[i];
       const id = Math.random().toString(36).slice(-8);
-      const content = this.#contentElements[i] as HTMLElement;
+      const content = this.#contentElements[i];
+
+      if (!trigger || !content) {
+        continue;
+      }
+
       content.id ||= `accordion-content-${id}`;
       trigger.setAttribute('aria-controls', content.id);
       trigger.setAttribute('aria-expanded', trigger.getAttribute('aria-expanded') ?? 'false');
@@ -137,18 +142,26 @@ export default class Accordion {
     }
 
     for (let i = 0, l = this.#contentElements.length; i < l; i++) {
-      const content = this.#contentElements[i] as HTMLElement;
-      content.setAttribute(
-        'aria-labelledby',
-        `${content.getAttribute('aria-labelledby') ?? ''} ${(this.#triggerElements[i] as HTMLElement).id}`.trim(),
-      );
+      const trigger = this.#triggerElements[i];
+      const content = this.#contentElements[i];
+
+      if (!trigger || !content) {
+        continue;
+      }
+
+      content.setAttribute('aria-labelledby', `${content.getAttribute('aria-labelledby') ?? ''} ${trigger.id}`.trim());
       content.setAttribute('role', 'region');
       content.addEventListener('beforematch', this.#onContentBeforeMatch, { signal });
     }
 
     for (let i = 0, l = this.#triggerElements.length; i < l; i++) {
-      const trigger = this.#triggerElements[i] as HTMLElement;
-      const content = this.#contentElements[i] as HTMLElement;
+      const trigger = this.#triggerElements[i];
+      const content = this.#contentElements[i];
+
+      if (!trigger || !content) {
+        continue;
+      }
+
       const binding = this.#createBinding(trigger, content);
       this.#bindings.set(trigger, binding);
       this.#bindings.set(content, binding);
