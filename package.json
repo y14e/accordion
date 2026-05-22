@@ -1,0 +1,53 @@
+{
+  "name": "@y14e/accordion",
+  "version": "1.2.4",
+  "description": "WAI-ARIA compliant accordion pattern implementation in TypeScript",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "prepublishOnly": "npm run build",
+    "lint": "tsc --noEmit"
+  },
+  "keywords": [
+    "a11y",
+    "accessibility",
+    "accordion",
+    "collapsible",
+    "component",
+    "typescript",
+    "utility"
+  ],
+  "author": "Yusuke Kamiyamane",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/y14e/accordion.git"
+  },
+  "bugs": {
+    "url": "https://github.com/y14e/accordion/issues"
+  },
+  "homepage": "https://github.com/y14e/accordion#readme",
+  "devDependencies": {
+    "bun-types": "latest",
+    "tsup": "^8.0.0",
+    "typescript": "^5.6.0"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

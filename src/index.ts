@@ -1,11 +1,12 @@
 /**
- * accordion.ts
+ * Accordion
+ * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
  * @version 1.2.4
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
- * @see {@link https://github.com/y14e/accordion-ts}
+ * @see {@link https://github.com/y14e/accordion}
  */
 
 // -----------------------------------------------------------------------------
