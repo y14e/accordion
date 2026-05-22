@@ -2,6 +2,24 @@
 
 WAI-ARIA compliant [accordion](https://www.w3.org/WAI/ARIA/apg/patterns/accordion/) pattern implementation in TypeScript.
 
+## Install
+
+```bash
+npm i @y14e/accordion
+```
+
+```ts
+// npm
+import Accordion from '@y14e/accordion';
+
+// CDNs
+import Accordion from 'https://esm.sh/@y14e/accordion'
+// or
+import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion/+esm';
+// or
+import Accordion from 'https://unpkg.com/@y14e/accordion/dist/index.js';
+```
+
 ## Usage
 
 ```ts
