@@ -99,4 +99,4 @@ accordion.destroy(force);
 
 ## Demo
 
-https://y14e.github.io/accordion-ts/
+https://y14e.github.io/accordion/
