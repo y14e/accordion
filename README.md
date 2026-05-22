@@ -51,7 +51,7 @@ interface AccordionOptions {
 Override the global default settings applied to all accordion instances.
 
 ```ts
-import Accordion from './accordion';
+import Accordion from '@y14e/accordion';
 
 Accordion.defaults = {
   animation: {
