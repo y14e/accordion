@@ -23,8 +23,6 @@ import Accordion from 'https://unpkg.com/@y14e/accordion/dist/index.js';
 ## Usage
 
 ```ts
-import Accordion from './accordion';
-
 new Accordion(root, options);
 // => Accordion
 //
