@@ -170,7 +170,6 @@ export default class Accordion {
   #initialize(): void {
     this.#eventController = new AbortController();
     const { signal } = this.#eventController;
-
     saveAttributes(this.#triggerElements, [
       'aria-controls',
       'aria-label',
