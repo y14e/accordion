@@ -177,6 +177,7 @@ export default class Accordion {
       'id',
       'tabindex',
     ]);
+
     this.#triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
       const content = this.#contentElements[i];
