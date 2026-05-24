@@ -2,12 +2,18 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.2.5
+ * @version 1.2.6
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
  * @see {@link https://github.com/y14e/accordion}
  */
+
+// -----------------------------------------------------------------------------
+// import
+// -----------------------------------------------------------------------------
+
+import type { DeepRequired } from 'utility-types';
 
 // -----------------------------------------------------------------------------
 // Types
@@ -23,14 +29,6 @@ export interface AccordionOptions {
     readonly trigger?: string;
   };
 }
-
-type DeepRequired<T> = T extends (...args: unknown[]) => unknown
-  ? T
-  : T extends readonly unknown[]
-    ? T
-    : T extends object
-      ? { [K in keyof T]-?: DeepRequired<NonNullable<T[K]>> }
-      : NonNullable<T>;
 
 type Binding = {
   trigger: HTMLElement;
@@ -141,7 +139,7 @@ export default class Accordion {
     this.#toggle(trigger, false);
   }
 
-  async destroy(force = false) {
+  async destroy(force = false): Promise<void> {
     if (this.#isDestroyed) {
       return;
     }
@@ -163,7 +161,7 @@ export default class Accordion {
     this.#rootElement.removeAttribute('data-accordion-initialized');
   }
 
-  #initialize() {
+  #initialize(): void {
     this.#eventController = new AbortController();
     const { signal } = this.#eventController;
 
@@ -201,27 +199,28 @@ export default class Accordion {
     this.#rootElement.setAttribute('data-accordion-initialized', '');
   }
 
-  #onTriggerClick = (event: Event) => {
+  #onTriggerClick = (event: Event): void => {
     event.preventDefault();
-    event.stopPropagation();
     const trigger = event.currentTarget;
 
     if (!(trigger instanceof HTMLElement)) {
       return;
     }
 
-    this.#toggle(trigger, trigger.ariaExpanded !== 'true');
+    this.#toggle(trigger, trigger.ariaExpanded === 'false');
   };
 
-  #onTriggerKeyDown = (event: KeyboardEvent) => {
-    const { key } = event;
+  #onTriggerKeyDown = (event: KeyboardEvent): void => {
+    const { key, altKey, ctrlKey, metaKey, shiftKey } = event;
+
+    if (altKey || ctrlKey || metaKey || shiftKey) {
+      return;
+    }
 
     if (!['Enter', ' ', 'End', 'Home', 'ArrowUp', 'ArrowDown'].includes(key)) {
       return;
     }
 
-    event.preventDefault();
-    event.stopPropagation();
     const focusables = this.#triggerElements.filter(isFocusable);
     const active = getActiveElement();
 
@@ -229,6 +228,7 @@ export default class Accordion {
       return;
     }
 
+    event.preventDefault();
     const currentIndex = focusables.indexOf(active);
     let newIndex = currentIndex;
 
@@ -254,7 +254,7 @@ export default class Accordion {
     focusables.at(newIndex)?.focus();
   };
 
-  #onContentBeforeMatch = (event: Event) => {
+  #onContentBeforeMatch = (event: Event): void => {
     const content = event.currentTarget;
 
     if (!(content instanceof HTMLElement)) {
@@ -271,7 +271,7 @@ export default class Accordion {
       this.#toggle(binding.trigger, true, true);
   };
 
-  #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false) {
+  #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false): void {
     if (trigger.ariaExpanded === String(isOpen)) {
       return;
     }
@@ -324,7 +324,7 @@ export default class Accordion {
     binding.animation = animation;
     trigger.setAttribute('aria-expanded', String(isOpen));
 
-    function cleanup() {
+    function cleanup(): void {
       if (binding?.animation === animation) {
         binding.animation = null;
       }
@@ -347,14 +347,14 @@ export default class Accordion {
   #mergeOptions(
     target: DeepRequired<AccordionOptions>,
     source: AccordionOptions,
-  ) {
+  ): DeepRequired<AccordionOptions> {
     return {
       animation: { ...target.animation, ...(source.animation ?? {}) },
       selector: { ...target.selector, ...(source.selector ?? {}) },
     };
   }
 
-  #onAnimationFinish(content: HTMLElement) {
+  #onAnimationFinish(content: HTMLElement): void {
     const trigger = this.#bindings.get(content)?.trigger;
 
     if (!trigger) {
@@ -370,7 +370,7 @@ export default class Accordion {
     style.removeProperty('overflow');
   }
 
-  async #waitAnimationsFinish() {
+  async #waitAnimationsFinish(): Promise<void> {
     const promises: Promise<void>[] = [];
 
     this.#contentElements.forEach((content) => {
@@ -390,7 +390,7 @@ function addTokenToAttribute(
   element: HTMLElement,
   attribute: string,
   token: string,
-) {
+): void {
   const tokens = new Set(
     element.getAttribute(attribute)?.trim().split(/\s+/) ?? [],
   );
@@ -398,11 +398,11 @@ function addTokenToAttribute(
   element.setAttribute(attribute, [...tokens].join(' '));
 }
 
-function createBinding(trigger: HTMLElement, content: HTMLElement) {
+function createBinding(trigger: HTMLElement, content: HTMLElement): Binding {
   return { trigger, content, animation: null };
 }
 
-function getActiveElement() {
+function getActiveElement(): Element | null {
   let current = document.activeElement;
 
   while (current?.shadowRoot?.activeElement) {
@@ -412,11 +412,11 @@ function getActiveElement() {
   return current;
 }
 
-function isFocusable(element: HTMLElement) {
+function isFocusable(element: HTMLElement): boolean {
   return !element.hasAttribute('disabled') && element.tabIndex >= 0;
 }
 
-function waitAnimationFinish(animation: Animation) {
+function waitAnimationFinish(animation: Animation): Promise<void> {
   const { playState } = animation;
 
   if (playState === 'idle' || playState === 'finished') {
