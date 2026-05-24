@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.2.6
+ * @version 1.2.7
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -13,6 +13,11 @@
 // import
 // -----------------------------------------------------------------------------
 
+import {
+  addTokenToAttribute,
+  restoreAttributes,
+  saveAttributes,
+} from '@y14e/attributes-utils';
 import type { DeepRequired } from 'utility-types';
 
 // -----------------------------------------------------------------------------
@@ -156,6 +161,7 @@ export default class Accordion {
 
     this.#animationController?.abort();
     this.#animationController = null;
+    restoreAttributes([...this.#triggerElements, ...this.#contentElements]);
     this.#triggerElements.length = 0;
     this.#contentElements.length = 0;
     this.#rootElement.removeAttribute('data-accordion-initialized');
@@ -165,6 +171,7 @@ export default class Accordion {
     this.#eventController = new AbortController();
     const { signal } = this.#eventController;
 
+    saveAttributes(this.#triggerElements, ['aria-controls', 'id', 'tabindex']);
     this.#triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
       const content = this.#contentElements[i];
@@ -173,6 +180,7 @@ export default class Accordion {
         return;
       }
 
+      saveAttributes([content], ['aria-labelledby', 'id', 'role']);
       content.id ||= `accordion-content-${id}`;
       addTokenToAttribute(trigger, 'aria-controls', content.id);
       trigger.setAttribute(
@@ -385,18 +393,6 @@ export default class Accordion {
 // -----------------------------------------------------------------------------
 // Utils
 // -----------------------------------------------------------------------------
-
-function addTokenToAttribute(
-  element: HTMLElement,
-  attribute: string,
-  token: string,
-): void {
-  const tokens = new Set(
-    element.getAttribute(attribute)?.trim().split(/\s+/) ?? [],
-  );
-  tokens.add(token);
-  element.setAttribute(attribute, [...tokens].join(' '));
-}
 
 function createBinding(trigger: HTMLElement, content: HTMLElement): Binding {
   return { trigger, content, animation: null };

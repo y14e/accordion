@@ -7,4 +7,5 @@ export default defineConfig({
   format: ['cjs', 'esm'],
   minify: false,
   treeshake: true,
+  noExternal: ['@y14e/attributes-utils'],
 });
