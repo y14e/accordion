@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.2.8
+ * @version 1.2.9
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -280,7 +280,7 @@ export default class Accordion {
       return;
     }
 
-    binding.trigger.ariaExpanded !== 'true' &&
+    binding.trigger.ariaExpanded === 'false' &&
       this.#toggle(binding.trigger, true, true);
   };
 
