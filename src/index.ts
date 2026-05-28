@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.2.12
+ * @version 1.3.0
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -18,6 +18,7 @@ import {
   restoreAttributes,
   saveAttributes,
 } from '@y14e/attributes-utils';
+import { createRovingTabIndex } from '@y14e/roving-tabindex';
 import type { DeepRequired } from 'utility-types';
 
 // -----------------------------------------------------------------------------
@@ -62,6 +63,7 @@ export default class Accordion {
   #bindings = new WeakMap<HTMLElement, Binding>();
   #eventController: AbortController | null = null;
   #animationController: AbortController | null = null;
+  #cleanupRovingTabIndex: (() => void) | null = null;
   #isDestroyed = false;
 
   constructor(root: HTMLElement, options: AccordionOptions = {}) {
@@ -115,6 +117,12 @@ export default class Accordion {
       this.#bindings.set(content, binding);
     });
 
+    this.#cleanupRovingTabIndex = createRovingTabIndex(this.#rootElement, {
+      direction: 'vertical',
+      navigationOnly: true,
+      selector: `${trigger}${NOT_NESTED}`,
+      wrap: true,
+    });
     this.#initialize();
   }
 
@@ -161,6 +169,8 @@ export default class Accordion {
 
     this.#animationController?.abort();
     this.#animationController = null;
+    this.#cleanupRovingTabIndex?.();
+    this.#cleanupRovingTabIndex = null;
     restoreAttributes([...this.#triggerElements, ...this.#contentElements]);
     this.#triggerElements.length = 0;
     this.#contentElements.length = 0;
@@ -231,11 +241,10 @@ export default class Accordion {
       return;
     }
 
-    if (!['Enter', ' ', 'End', 'Home', 'ArrowUp', 'ArrowDown'].includes(key)) {
+    if (!['Enter', ' '].includes(key)) {
       return;
     }
 
-    const focusables = this.#triggerElements.filter(isFocusable);
     const active = getActiveElement();
 
     if (!(active instanceof HTMLElement)) {
@@ -243,29 +252,13 @@ export default class Accordion {
     }
 
     event.preventDefault();
-    const currentIndex = focusables.indexOf(active);
-    let newIndex = currentIndex;
 
     switch (key) {
       case 'Enter':
       case ' ':
         active.click();
         return;
-      case 'End':
-        newIndex = -1;
-        break;
-      case 'Home':
-        newIndex = 0;
-        break;
-      case 'ArrowUp':
-        newIndex = currentIndex - 1;
-        break;
-      case 'ArrowDown':
-        newIndex = (currentIndex + 1) % focusables.length;
-        break;
     }
-
-    focusables.at(newIndex)?.focus();
   };
 
   #onContentBeforeMatch = (event: Event): void => {
