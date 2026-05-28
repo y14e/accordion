@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.3.0
+ * @version 1.3.1
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -158,6 +158,8 @@ export default class Accordion {
     }
 
     this.#isDestroyed = true;
+    this.#cleanupRovingTabIndex?.();
+    this.#cleanupRovingTabIndex = null;
     this.#eventController?.abort();
     this.#eventController = null;
     !force && (await this.#waitAnimationsFinish());
@@ -169,8 +171,6 @@ export default class Accordion {
 
     this.#animationController?.abort();
     this.#animationController = null;
-    this.#cleanupRovingTabIndex?.();
-    this.#cleanupRovingTabIndex = null;
     restoreAttributes([...this.#triggerElements, ...this.#contentElements]);
     this.#triggerElements.length = 0;
     this.#contentElements.length = 0;
