@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.3.3
+ * @version 1.4.0
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -18,6 +18,7 @@ import {
   restoreAttributes,
   saveAttributes,
 } from '@y14e/attributes-utils';
+import Button from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
 import type { DeepRequired } from 'utility-types';
 
@@ -64,6 +65,7 @@ export default class Accordion {
   #eventController: AbortController | null = null;
   #animationController: AbortController | null = null;
   #cleanupRovingTabIndex: (() => void) | null = null;
+  #buttons: Button[] = [];
   #isDestroyed = false;
 
   constructor(root: HTMLElement, options: AccordionOptions = {}) {
@@ -156,6 +158,12 @@ export default class Accordion {
     this.#eventController = null;
     this.#cleanupRovingTabIndex?.();
     this.#cleanupRovingTabIndex = null;
+
+    this.#buttons.forEach((button) => {
+      button.destroy();
+    });
+
+    this.#buttons.length = 0;
     !force && (await this.#waitAnimationsFinish());
 
     this.#contentElements.forEach((content) => {
@@ -206,12 +214,12 @@ export default class Accordion {
       }
 
       trigger.addEventListener('click', this.#onTriggerClick, { signal });
-      trigger.addEventListener('keydown', this.#onTriggerKeyDown, { signal });
       addTokenToAttribute(content, 'aria-labelledby', trigger.id);
       content.setAttribute('role', 'region');
       content.addEventListener('beforematch', this.#onContentBeforeMatch, {
         signal,
       });
+      this.#buttons.push(new Button(trigger));
     });
 
     const { trigger, content } = this.#settings.selector;
@@ -234,27 +242,6 @@ export default class Accordion {
     }
 
     this.#toggle(trigger, trigger.ariaExpanded === 'false');
-  };
-
-  #onTriggerKeyDown = (event: KeyboardEvent): void => {
-    const { key, altKey, ctrlKey, metaKey, shiftKey } = event;
-
-    if (altKey || ctrlKey || metaKey || shiftKey) {
-      return;
-    }
-
-    if (!['Enter', ' '].includes(key)) {
-      return;
-    }
-
-    const active = getActiveElement();
-
-    if (!(active instanceof HTMLElement)) {
-      return;
-    }
-
-    event.preventDefault();
-    active.click();
   };
 
   #onContentBeforeMatch = (event: Event): void => {
@@ -391,16 +378,6 @@ export default class Accordion {
 
 function createBinding(trigger: HTMLElement, content: HTMLElement): Binding {
   return { trigger, content, animation: null };
-}
-
-function getActiveElement(): Element | null {
-  let current = document.activeElement;
-
-  while (current?.shadowRoot?.activeElement) {
-    current = current.shadowRoot.activeElement;
-  }
-
-  return current;
 }
 
 function isFocusable(element: HTMLElement): boolean {
