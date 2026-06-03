@@ -1,6 +1,6 @@
 {
   "name": "@y14e/accordion",
-  "version": "1.4.1",
+  "version": "1.4.2",
   "description": "WAI-ARIA compliant accordion pattern implementation in TypeScript",
   "type": "module",
   "main": "./dist/index.cjs",
@@ -45,7 +45,7 @@
   "devDependencies": {
     "@y14e/attributes-utils": "^1.1.0",
     "@y14e/button": "^1.0.0",
-    "@y14e/roving-tabindex": "^2.0.3",
+    "@y14e/roving-tabindex": "^2.0.4",
     "bun-types": "latest",
     "tsup": "^8.0.0",
     "typescript": "^5.6.0",

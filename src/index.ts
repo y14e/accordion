@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.1
+ * @version 1.4.2
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -180,8 +180,6 @@ export default class Accordion {
   }
 
   #initialize(): void {
-    this.#eventController = new AbortController();
-    const { signal } = this.#eventController;
     saveAttributes(this.#triggerElements, [
       'aria-controls',
       'aria-disabled',
@@ -189,6 +187,9 @@ export default class Accordion {
       'style',
       'tabindex',
     ]);
+    saveAttributes(this.#contentElements, ['aria-labelledby', 'id', 'role']);
+    this.#eventController = new AbortController();
+    const { signal } = this.#eventController;
 
     this.#triggerElements.forEach((trigger, i) => {
       const id = Math.random().toString(36).slice(-8);
@@ -198,7 +199,6 @@ export default class Accordion {
         return;
       }
 
-      saveAttributes([content], ['aria-labelledby', 'id', 'role']);
       content.id ||= `accordion-content-${id}`;
       addTokenToAttribute(trigger, 'aria-controls', content.id);
       trigger.setAttribute(
