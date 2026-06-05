@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.2
+ * @version 1.4.3
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -355,9 +355,9 @@ export default class Accordion {
       content.setAttribute('hidden', 'until-found');
     }
 
-    const { style } = content;
-    style.removeProperty('block-size');
-    style.removeProperty('overflow');
+    ['block-size', 'overflow'].forEach((name) => {
+      content.style.removeProperty(name);
+    });
   }
 
   async #waitAnimationsFinish(): Promise<void> {
