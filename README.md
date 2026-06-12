@@ -10,14 +10,14 @@ npm i @y14e/accordion
 
 ```ts
 // npm
-import Accordion from '@y14e/accordion@1.4.4';
+import Accordion from '@y14e/accordion@1.4.5';
 
 // CDNs
-import Accordion from 'https://esm.sh/@y14e/accordion@1.4.4';
+import Accordion from 'https://esm.sh/@y14e/accordion@1.4.5';
 // or
-import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@1.4.4/+esm';
+import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@1.4.5/+esm';
 // or
-import Accordion from 'https://esm.unpkg.com/@y14e/accordion@1.4.4';
+import Accordion from 'https://esm.unpkg.com/@y14e/accordion@1.4.5';
 ```
 
 ## Usage
@@ -68,15 +68,6 @@ new Accordion(root);
 
 ## 📦 APIs
 
-### `open`
-
-```ts
-accordion.open(trigger);
-// => void
-//
-// trigger: HTMLElement
-```
-
 ### `close`
 
 ```ts
@@ -95,6 +86,15 @@ accordion.destroy(force);
 // => Promise<void>
 //
 // force (optional): If true, skips waiting for animations to finish.
+```
+
+### `open`
+
+```ts
+accordion.open(trigger);
+// => void
+//
+// trigger: HTMLElement
 ```
 
 ## Demo

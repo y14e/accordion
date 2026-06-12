@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.4
+ * @version 1.4.5
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -122,19 +122,6 @@ export default class Accordion {
     this.#initialize();
   }
 
-  open(trigger: HTMLElement): void {
-    if (this.#isDestroyed) {
-      return;
-    }
-
-    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
-      console.warn('Invalid trigger element');
-      return;
-    }
-
-    this.#toggle(trigger, true);
-  }
-
   close(trigger: HTMLElement): void {
     if (this.#isDestroyed) {
       return;
@@ -177,6 +164,19 @@ export default class Accordion {
     this.#triggerElements.length = 0;
     this.#contentElements.length = 0;
     this.#rootElement.removeAttribute('data-accordion-initialized');
+  }
+
+  open(trigger: HTMLElement): void {
+    if (this.#isDestroyed) {
+      return;
+    }
+
+    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
+      console.warn('Invalid trigger element');
+      return;
+    }
+
+    this.#toggle(trigger, true);
   }
 
   #initialize(): void {
