@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.7
+ * @version 1.4.8
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -386,9 +386,7 @@ function isFocusable(element: HTMLElement): boolean {
 }
 
 function waitAnimationFinish(animation: Animation): Promise<void> {
-  const { playState } = animation;
-
-  if (playState === 'idle' || playState === 'finished') {
+  if (['idle', 'finished'].includes(animation.playState)) {
     return Promise.resolve();
   }
 
