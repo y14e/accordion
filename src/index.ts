@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.10
+ * @version 1.4.11
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -125,11 +125,12 @@ export default class Accordion {
       return;
     }
 
-    if (trigger instanceof HTMLElement && this.#bindings.has(trigger)) {
-      this.#toggle(trigger, false);
-    } else {
+    if (!(trigger instanceof HTMLElement)) {
       console.warn('Invalid trigger element');
+      return;
     }
+
+    this.#bindings.has(trigger) && this.#toggle(trigger, false);
   }
 
   async destroy(force = false): Promise<void> {
@@ -168,11 +169,12 @@ export default class Accordion {
       return;
     }
 
-    if (trigger instanceof HTMLElement && this.#bindings.has(trigger)) {
-      this.#toggle(trigger, true);
-    } else {
+    if (!(trigger instanceof HTMLElement)) {
       console.warn('Invalid trigger element');
+      return;
     }
+
+    this.#bindings.has(trigger) && this.#toggle(trigger, true);
   }
 
   #initialize(): void {
@@ -233,20 +235,24 @@ export default class Accordion {
     event.preventDefault();
     const trigger = event.currentTarget;
 
-    if (trigger instanceof HTMLElement) {
-      this.#toggle(trigger, trigger.ariaExpanded === 'false');
+    if (!(trigger instanceof HTMLElement)) {
+      return;
     }
+
+    this.#toggle(trigger, trigger.ariaExpanded === 'false');
   };
 
   #onContentBeforeMatch = (event: Event): void => {
     const content = event.currentTarget;
 
-    if (content instanceof HTMLElement) {
-      const binding = this.#bindings.get(content);
-      binding &&
-        binding.trigger.ariaExpanded === 'false' &&
-        this.#toggle(binding.trigger, true, true);
+    if (!(content instanceof HTMLElement)) {
+      return;
     }
+
+    const binding = this.#bindings.get(content);
+    binding &&
+      binding.trigger.ariaExpanded === 'false' &&
+      this.#toggle(binding.trigger, true, true);
   };
 
   #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false): void {
