@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.9
+ * @version 1.4.10
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -110,13 +110,11 @@ export default class Accordion {
     this.#triggerElements.forEach((trigger, i) => {
       const content = this.#contentElements[i];
 
-      if (!content) {
-        return;
+      if (content) {
+        const binding = createBinding(trigger, content);
+        this.#bindings.set(trigger, binding);
+        this.#bindings.set(content, binding);
       }
-
-      const binding = createBinding(trigger, content);
-      this.#bindings.set(trigger, binding);
-      this.#bindings.set(content, binding);
     });
 
     this.#initialize();
@@ -127,12 +125,11 @@ export default class Accordion {
       return;
     }
 
-    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
+    if (trigger instanceof HTMLElement && this.#bindings.has(trigger)) {
+      this.#toggle(trigger, false);
+    } else {
       console.warn('Invalid trigger element');
-      return;
     }
-
-    this.#toggle(trigger, false);
   }
 
   async destroy(force = false): Promise<void> {
@@ -171,12 +168,11 @@ export default class Accordion {
       return;
     }
 
-    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
+    if (trigger instanceof HTMLElement && this.#bindings.has(trigger)) {
+      this.#toggle(trigger, true);
+    } else {
       console.warn('Invalid trigger element');
-      return;
     }
-
-    this.#toggle(trigger, true);
   }
 
   #initialize(): void {
@@ -237,28 +233,20 @@ export default class Accordion {
     event.preventDefault();
     const trigger = event.currentTarget;
 
-    if (!(trigger instanceof HTMLElement)) {
-      return;
+    if (trigger instanceof HTMLElement) {
+      this.#toggle(trigger, trigger.ariaExpanded === 'false');
     }
-
-    this.#toggle(trigger, trigger.ariaExpanded === 'false');
   };
 
   #onContentBeforeMatch = (event: Event): void => {
     const content = event.currentTarget;
 
-    if (!(content instanceof HTMLElement)) {
-      return;
+    if (content instanceof HTMLElement) {
+      const binding = this.#bindings.get(content);
+      binding &&
+        binding.trigger.ariaExpanded === 'false' &&
+        this.#toggle(binding.trigger, true, true);
     }
-
-    const binding = this.#bindings.get(content);
-
-    if (!binding) {
-      return;
-    }
-
-    binding.trigger.ariaExpanded === 'false' &&
-      this.#toggle(binding.trigger, true, true);
   };
 
   #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false): void {
@@ -346,11 +334,7 @@ export default class Accordion {
   #onAnimationFinish(content: HTMLElement): void {
     const trigger = this.#bindings.get(content)?.trigger;
 
-    if (!trigger) {
-      return;
-    }
-
-    if (trigger.ariaExpanded === 'false') {
+    if (trigger && trigger.ariaExpanded === 'false') {
       content.setAttribute('hidden', 'until-found');
     }
 
@@ -386,9 +370,9 @@ function isFocusable(element: HTMLElement): boolean {
 function waitAnimationFinish(animation: Animation): Promise<void> {
   if (['idle', 'finished'].includes(animation.playState)) {
     return Promise.resolve();
+  } else {
+    return new Promise<void>((resolve) =>
+      animation.addEventListener('finish', () => resolve(), { once: true }),
+    );
   }
-
-  return new Promise<void>((resolve) =>
-    animation.addEventListener('finish', () => resolve(), { once: true }),
-  );
 }
