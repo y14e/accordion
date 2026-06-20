@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.11
+ * @version 1.4.12
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -110,11 +110,13 @@ export default class Accordion {
     this.#triggerElements.forEach((trigger, i) => {
       const content = this.#contentElements[i];
 
-      if (content) {
-        const binding = createBinding(trigger, content);
-        this.#bindings.set(trigger, binding);
-        this.#bindings.set(content, binding);
+      if (!content) {
+        return;
       }
+
+      const binding = createBinding(trigger, content);
+      this.#bindings.set(trigger, binding);
+      this.#bindings.set(content, binding);
     });
 
     this.#initialize();
@@ -125,12 +127,12 @@ export default class Accordion {
       return;
     }
 
-    if (!(trigger instanceof HTMLElement)) {
+    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
       console.warn('Invalid trigger element');
       return;
     }
 
-    this.#bindings.has(trigger) && this.#toggle(trigger, false);
+    this.#toggle(trigger, false);
   }
 
   async destroy(force = false): Promise<void> {
@@ -169,12 +171,12 @@ export default class Accordion {
       return;
     }
 
-    if (!(trigger instanceof HTMLElement)) {
+    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
       console.warn('Invalid trigger element');
       return;
     }
 
-    this.#bindings.has(trigger) && this.#toggle(trigger, true);
+    this.#toggle(trigger, true);
   }
 
   #initialize(): void {
@@ -250,8 +252,12 @@ export default class Accordion {
     }
 
     const binding = this.#bindings.get(content);
-    binding &&
-      binding.trigger.ariaExpanded === 'false' &&
+
+    if (!binding) {
+      return;
+    }
+
+    binding.trigger.ariaExpanded === 'false' &&
       this.#toggle(binding.trigger, true, true);
   };
 
@@ -340,7 +346,11 @@ export default class Accordion {
   #onAnimationFinish(content: HTMLElement): void {
     const trigger = this.#bindings.get(content)?.trigger;
 
-    if (trigger && trigger.ariaExpanded === 'false') {
+    if (!trigger) {
+      return;
+    }
+
+    if (trigger.ariaExpanded === 'false') {
       content.setAttribute('hidden', 'until-found');
     }
 
