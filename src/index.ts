@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.14
+ * @version 1.4.15
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -13,13 +13,13 @@
 // import
 // -----------------------------------------------------------------------------
 
-import Button from '@y14e/button';
 import {
   addTokenToAttribute,
-  createRovingTabIndex,
   restoreAttributes,
   saveAttributes,
-} from '@y14e/roving-tabindex';
+} from '@y14e/attributes-utils';
+import Button from '@y14e/button';
+import { createRovingTabIndex } from '@y14e/roving-tabindex';
 import type { DeepRequired } from 'utility-types';
 
 // -----------------------------------------------------------------------------
