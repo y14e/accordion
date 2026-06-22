@@ -12,6 +12,7 @@ export default defineConfig([
     bundle: true,
     entry: { 'index.bundle': 'src/index.ts' },
     format: ['cjs', 'esm'],
+    noExternal: [/(.*)/],
     treeshake: true,
   },
 ]);
