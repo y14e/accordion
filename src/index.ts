@@ -13,13 +13,13 @@
 // import
 // -----------------------------------------------------------------------------
 
+import Button from '@y14e/button';
 import {
   addTokenToAttribute,
+  createRovingTabIndex,
   restoreAttributes,
   saveAttributes,
-} from '@y14e/attributes-utils';
-import Button from '@y14e/button';
-import { createRovingTabIndex } from '@y14e/roving-tabindex';
+} from '@y14e/roving-tabindex';
 import type { DeepRequired } from 'utility-types';
 
 // -----------------------------------------------------------------------------
