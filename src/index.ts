@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.16
+ * @version 1.4.17
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -114,7 +114,7 @@ export default class Accordion {
         return;
       }
 
-      const binding = createBinding(trigger, content);
+      const binding = this.#createBinding(trigger, content);
       this.#bindings.set(trigger, binding);
       this.#bindings.set(content, binding);
     });
@@ -155,7 +155,7 @@ export default class Accordion {
 
     this.#contentElements.forEach((content) => {
       force && this.#bindings.get(content)?.animation?.finish();
-      this.#onAnimationFinish(content);
+      this.#onContentAnimationFinish(content);
     });
 
     this.#animationController?.abort();
@@ -207,7 +207,7 @@ export default class Accordion {
       );
       trigger.id ||= `accordion-trigger-${id}`;
 
-      if (!isFocusable(trigger)) {
+      if (!this.#isFocusable(trigger)) {
         trigger.setAttribute('aria-disabled', 'true');
         trigger.setAttribute('tabindex', '-1');
         trigger.style.setProperty('pointer-events', 'none');
@@ -244,6 +244,21 @@ export default class Accordion {
     this.#toggle(trigger, trigger.ariaExpanded === 'false');
   };
 
+  #onContentAnimationFinish(content: HTMLElement): void {
+    const trigger = this.#bindings.get(content)?.trigger;
+
+    if (!trigger) {
+      return;
+    }
+
+    trigger.ariaExpanded === 'false' &&
+      content.setAttribute('hidden', 'until-found');
+
+    ['block-size', 'overflow'].forEach((name) => {
+      content.style.removeProperty(name);
+    });
+  }
+
   #onContentBeforeMatch = (event: Event): void => {
     const content = event.currentTarget;
 
@@ -269,13 +284,13 @@ export default class Accordion {
     const name = trigger.getAttribute('data-accordion-name');
 
     if (name && isOpen) {
-      const opened = this.#triggerElements.find(
+      const open = this.#triggerElements.find(
         (t) =>
           t !== trigger &&
           t.getAttribute('data-accordion-name') === name &&
           t.ariaExpanded === 'true',
       );
-      opened && this.#toggle(opened, false, isMatch);
+      open && this.#toggle(open, false, isMatch);
     }
 
     trigger.setAttribute(
@@ -325,12 +340,20 @@ export default class Accordion {
       'finish',
       () => {
         if (binding?.animation === animation) {
-          this.#onAnimationFinish(content);
+          this.#onContentAnimationFinish(content);
           cleanup();
         }
       },
       { once: true, signal },
     );
+  }
+
+  #createBinding(trigger: HTMLElement, content: HTMLElement): Binding {
+    return { trigger, content, animation: null };
+  }
+
+  #isFocusable(element: HTMLElement): boolean {
+    return !element.hasAttribute('disabled') && element.tabIndex >= 0;
   }
 
   #mergeOptions(
@@ -341,22 +364,6 @@ export default class Accordion {
       animation: { ...target.animation, ...(source.animation ?? {}) },
       selector: { ...target.selector, ...(source.selector ?? {}) },
     };
-  }
-
-  #onAnimationFinish(content: HTMLElement): void {
-    const trigger = this.#bindings.get(content)?.trigger;
-
-    if (!trigger) {
-      return;
-    }
-
-    if (trigger.ariaExpanded === 'false') {
-      content.setAttribute('hidden', 'until-found');
-    }
-
-    ['block-size', 'overflow'].forEach((name) => {
-      content.style.removeProperty(name);
-    });
   }
 
   async #waitAnimationsFinish(): Promise<void> {
@@ -375,20 +382,10 @@ export default class Accordion {
 // Utils
 // -----------------------------------------------------------------------------
 
-function createBinding(trigger: HTMLElement, content: HTMLElement): Binding {
-  return { trigger, content, animation: null };
-}
-
-function isFocusable(element: HTMLElement): boolean {
-  return !element.hasAttribute('disabled') && element.tabIndex >= 0;
-}
-
 function waitAnimationFinish(animation: Animation): Promise<void> {
-  if (['idle', 'finished'].includes(animation.playState)) {
-    return Promise.resolve();
-  } else {
-    return new Promise<void>((resolve) =>
-      animation.addEventListener('finish', () => resolve(), { once: true }),
-    );
-  }
+  return ['idle', 'finished'].includes(animation.playState)
+    ? Promise.resolve()
+    : new Promise((resolve) =>
+        animation.addEventListener('finish', () => resolve(), { once: true }),
+      );
 }

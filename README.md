@@ -10,14 +10,14 @@ npm i @y14e/accordion
 
 ```ts
 // npm
-import Accordion from '@y14e/accordion@1.4.16';
+import Accordion from '@y14e/accordion@1.4.17';
 
 // CDNs
-import Accordion from 'https://esm.sh/@y14e/accordion@1.4.16';
+import Accordion from 'https://esm.sh/@y14e/accordion@1.4.17';
 // or
-import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@1.4.16/+esm';
+import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@1.4.17/+esm';
 // or
-import Accordion from 'https://esm.unpkg.com/@y14e/accordion@1.4.16';
+import Accordion from 'https://esm.unpkg.com/@y14e/accordion@1.4.17';
 ```
 
 ## Usage
