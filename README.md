@@ -13,11 +13,11 @@ npm i @y14e/accordion
 import Accordion from '@y14e/accordion';
 
 // CDNs
-import Accordion from 'https://esm.sh/@y14e/accordion@1.4.18';
+import Accordion from 'https://esm.sh/@y14e/accordion@2.0.0';
 // or
-import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@1.4.18/+esm';
+import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@2.0.0/+esm';
 // or
-import Accordion from 'https://esm.unpkg.com/@y14e/accordion@1.4.18';
+import Accordion from 'https://esm.unpkg.com/@y14e/accordion@2.0.0';
 ```
 
 ## Usage
@@ -40,7 +40,7 @@ interface AccordionOptions {
     easing?: string;   // <easing-function> (default: 'ease')
   };
   selector?: {
-    content?: string;  // default: ':has(> [data-accordion-trigger]) + *'
+    content?: string;  // default: '[data-accordion-content]'
     trigger?: string;  // default: '[data-accordion-trigger]'
   };
 }
@@ -68,10 +68,10 @@ new Accordion(root);
 
 ## 📦 APIs
 
-### `close`
+### `collapse`
 
 ```ts
-accordion.close(trigger);
+accordion.collapse(trigger);
 // => void
 //
 // trigger: HTMLElement
@@ -88,10 +88,10 @@ accordion.destroy(force);
 // force (optional): If true, skips waiting for animations to finish.
 ```
 
-### `open`
+### `expand`
 
 ```ts
-accordion.open(trigger);
+accordion.expand(trigger);
 // => void
 //
 // trigger: HTMLElement

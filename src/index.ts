@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 1.4.18
+ * @version 2.0.0
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -54,7 +54,7 @@ export default class Accordion {
   #defaults = {
     animation: { duration: 300, easing: 'ease' },
     selector: {
-      content: ':has(> [data-accordion-trigger]) + *',
+      content: '[data-accordion-content]',
       trigger: '[data-accordion-trigger]',
     },
   };
@@ -122,7 +122,7 @@ export default class Accordion {
     this.#initialize();
   }
 
-  close(trigger: HTMLElement): void {
+  collapse(trigger: HTMLElement): void {
     if (this.#isDestroyed) {
       return;
     }
@@ -166,7 +166,7 @@ export default class Accordion {
     this.#rootElement.removeAttribute('data-accordion-initialized');
   }
 
-  open(trigger: HTMLElement): void {
+  expand(trigger: HTMLElement): void {
     if (this.#isDestroyed) {
       return;
     }
@@ -229,7 +229,6 @@ export default class Accordion {
       selector: `${trigger}:not(:scope ${content} *)`,
       wrap: true,
     });
-
     this.#rootElement.setAttribute('data-accordion-initialized', '');
   }
 
@@ -276,27 +275,27 @@ export default class Accordion {
       this.#toggle(binding.trigger, true, true);
   };
 
-  #toggle(trigger: HTMLElement, isOpen: boolean, isMatch = false): void {
-    if (trigger.ariaExpanded === String(isOpen)) {
+  #toggle(trigger: HTMLElement, isExpand: boolean, isMatch = false): void {
+    if (trigger.ariaExpanded === String(isExpand)) {
       return;
     }
 
     const name = trigger.getAttribute('data-accordion-name');
 
-    if (name && isOpen) {
-      const open = this.#triggerElements.find(
+    if (name && isExpand) {
+      const expanded = this.#triggerElements.find(
         (t) =>
           t !== trigger &&
           t.getAttribute('data-accordion-name') === name &&
           t.ariaExpanded === 'true',
       );
-      open && this.#toggle(open, false, isMatch);
+      expanded && this.#toggle(expanded, false, isMatch);
     }
 
     trigger.setAttribute(
       'aria-label',
       trigger.getAttribute(
-        `data-accordion-${isOpen ? 'expanded' : 'collapsed'}-label`,
+        `data-accordion-${isExpand ? 'expanded' : 'collapsed'}-label`,
       ) ??
         trigger.ariaLabel ??
         '',
@@ -315,7 +314,7 @@ export default class Accordion {
       content.hidden = false;
     }
 
-    const endSize = isOpen ? content.scrollHeight : 0;
+    const endSize = isExpand ? content.scrollHeight : 0;
     binding.animation?.cancel();
     content.style.setProperty('overflow', 'clip');
     const { duration, easing } = this.#settings.animation;
@@ -324,7 +323,7 @@ export default class Accordion {
       { duration: isMatch ? 0 : duration, easing },
     );
     binding.animation = animation;
-    trigger.setAttribute('aria-expanded', String(isOpen));
+    trigger.setAttribute('aria-expanded', String(isExpand));
 
     function cleanup(): void {
       if (binding?.animation === animation) {
