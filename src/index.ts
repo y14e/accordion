@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.0.1
+ * @version 2.0.2
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -31,6 +31,7 @@ export interface AccordionOptions {
     readonly duration?: number;
     readonly easing?: string;
   };
+  readonly collapsible?: boolean;
   readonly selector?: {
     readonly content?: string;
     readonly trigger?: string;
@@ -53,6 +54,7 @@ export default class Accordion {
   #rootElement!: HTMLElement;
   #defaults = {
     animation: { duration: 300, easing: 'ease' },
+    collapsible: true,
     selector: {
       content: '[data-accordion-content]',
       trigger: '[data-accordion-trigger]',
@@ -275,8 +277,23 @@ export default class Accordion {
       this.#toggle(binding.trigger, true, true);
   };
 
-  #toggle(trigger: HTMLElement, isExpand: boolean, isMatch = false): void {
+  #toggle(
+    trigger: HTMLElement,
+    isExpand: boolean,
+    isMatch = false,
+    isProgrammatic = false,
+  ): void {
     if (trigger.ariaExpanded === String(isExpand)) {
+      return;
+    }
+
+    if (
+      !isExpand &&
+      !isProgrammatic &&
+      !this.#settings.collapsible &&
+      this.#triggerElements.filter((trigger) => trigger.ariaExpanded === 'true')
+        .length <= 1
+    ) {
       return;
     }
 
@@ -289,7 +306,7 @@ export default class Accordion {
           t.getAttribute('data-accordion-name') === name &&
           t.ariaExpanded === 'true',
       );
-      expanded && this.#toggle(expanded, false, isMatch);
+      expanded && this.#toggle(expanded, false, isMatch, true);
     }
 
     trigger.setAttribute(
@@ -360,6 +377,8 @@ export default class Accordion {
     source: AccordionOptions,
   ): DeepRequired<AccordionOptions> {
     return {
+      ...target,
+      ...source,
       animation: { ...target.animation, ...(source.animation ?? {}) },
       selector: { ...target.selector, ...(source.selector ?? {}) },
     };
