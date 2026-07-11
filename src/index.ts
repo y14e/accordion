@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.0.2
+ * @version 2.0.3
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -20,21 +20,20 @@ import {
 } from '@y14e/attributes-utils';
 import Button from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
-import type { DeepRequired } from 'utility-types';
 
 // -----------------------------------------------------------------------------
 // Types
 // -----------------------------------------------------------------------------
 
 export interface AccordionOptions {
-  readonly animation?: {
-    readonly duration?: number;
-    readonly easing?: string;
+  animation: {
+    duration: number;
+    easing: string;
   };
-  readonly collapsible?: boolean;
-  readonly selector?: {
-    readonly content?: string;
-    readonly trigger?: string;
+  collapsible: boolean;
+  selector: {
+    content: string;
+    trigger: string;
   };
 }
 
@@ -49,7 +48,7 @@ type Binding = {
 // -----------------------------------------------------------------------------
 
 export default class Accordion {
-  static defaults: AccordionOptions = {};
+  static defaults: Partial<AccordionOptions> = {};
 
   #rootElement!: HTMLElement;
   #defaults = {
@@ -60,7 +59,7 @@ export default class Accordion {
       trigger: '[data-accordion-trigger]',
     },
   };
-  #settings!: DeepRequired<AccordionOptions>;
+  #settings!: AccordionOptions;
   #triggerElements!: HTMLElement[];
   #contentElements!: HTMLElement[];
   #bindings = new WeakMap<HTMLElement, Binding>();
@@ -70,7 +69,7 @@ export default class Accordion {
   #buttons: Button[] = [];
   #isDestroyed = false;
 
-  constructor(root: HTMLElement, options: AccordionOptions = {}) {
+  constructor(root: HTMLElement, options: Partial<AccordionOptions> = {}) {
     if (!(root instanceof HTMLElement)) {
       throw new TypeError('Invalid root element');
     }
@@ -373,9 +372,9 @@ export default class Accordion {
   }
 
   #mergeOptions(
-    target: DeepRequired<AccordionOptions>,
-    source: AccordionOptions,
-  ): DeepRequired<AccordionOptions> {
+    target: AccordionOptions,
+    source: Partial<AccordionOptions>,
+  ): AccordionOptions {
     return {
       ...target,
       ...source,

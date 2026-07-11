@@ -13,11 +13,11 @@ npm i @y14e/accordion
 import Accordion from '@y14e/accordion';
 
 // CDNs
-import Accordion from 'https://esm.sh/@y14e/accordion@2.0.2';
+import Accordion from 'https://esm.sh/@y14e/accordion@2.0.3';
 // or
-import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@2.0.2/+esm';
+import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@2.0.3/+esm';
 // or
-import Accordion from 'https://esm.unpkg.com/@y14e/accordion@2.0.2';
+import Accordion from 'https://esm.unpkg.com/@y14e/accordion@2.0.3';
 ```
 
 ## Usage
@@ -35,14 +35,14 @@ new Accordion(root, options);
 
 ```ts
 interface AccordionOptions {
-  animation?: {
-    duration?: number;   // ms (default: 300)
-    easing?: string;     // <easing-function> (default: 'ease')
+  animation: {
+    duration: number;   // ms (default: 300)
+    easing: string;     // <easing-function> (default: 'ease')
   };
-  collapsible?: boolean; // default: true
-  selector?: {
-    content?: string;    // default: '[data-accordion-content]'
-    trigger?: string;    // default: '[data-accordion-trigger]'
+  collapsible: boolean; // default: true
+  selector: {
+    content: string;    // default: '[data-accordion-content]'
+    trigger: string;    // default: '[data-accordion-trigger]'
   };
 }
 ```
