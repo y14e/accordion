@@ -35,13 +35,13 @@ new Accordion(root, options);
 ```ts
 interface AccordionOptions {
   animation: {
-    duration: number; // ms (default: 300)
-    easing: string; // <easing-function> (default: 'ease')
+    duration: number;   // ms (default: 300)
+    easing: string;     // <easing-function> (default: 'ease')
   };
   collapsible: boolean; // default: true
   selector: {
-    content: string; // default: '[data-accordion-content]'
-    trigger: string; // default: '[data-accordion-trigger]'
+    content: string;    // default: '[data-accordion-content]'
+    trigger: string;    // default: '[data-accordion-trigger]'
   };
 }
 ```
