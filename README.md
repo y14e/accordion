@@ -10,14 +10,14 @@ npm i @y14e/accordion
 
 ```ts
 // npm
-import Accordion from '@y14e/accordion';
+import Accordion from "@y14e/accordion";
 
 // CDNs
-import Accordion from 'https://esm.sh/@y14e/accordion@2.0.3';
+import Accordion from "https://esm.sh/@y14e/accordion@2.0.4";
 // or
-import Accordion from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@2.0.3/+esm';
+import Accordion from "https://cdn.jsdelivr.net/npm/@y14e/accordion@2.0.4/+esm";
 // or
-import Accordion from 'https://esm.unpkg.com/@y14e/accordion@2.0.3';
+import Accordion from "https://esm.unpkg.com/@y14e/accordion@2.0.4";
 ```
 
 ## Usage
@@ -28,7 +28,6 @@ new Accordion(root, options);
 //
 // root: HTMLElement
 // options (optional): AccordionOptions
-
 ```
 
 ## 🪄 Options
@@ -36,13 +35,13 @@ new Accordion(root, options);
 ```ts
 interface AccordionOptions {
   animation: {
-    duration: number;   // ms (default: 300)
-    easing: string;     // <easing-function> (default: 'ease')
+    duration: number; // ms (default: 300)
+    easing: string; // <easing-function> (default: 'ease')
   };
   collapsible: boolean; // default: true
   selector: {
-    content: string;    // default: '[data-accordion-content]'
-    trigger: string;    // default: '[data-accordion-trigger]'
+    content: string; // default: '[data-accordion-content]'
+    trigger: string; // default: '[data-accordion-trigger]'
   };
 }
 ```
@@ -52,15 +51,15 @@ interface AccordionOptions {
 Override the global default settings applied to all accordion instances.
 
 ```ts
-import Accordion from '@y14e/accordion';
+import Accordion from "@y14e/accordion";
 
 Accordion.defaults = {
   animation: {
     duration: 1000,
   },
   selector: {
-    content: '.content',
-    trigger: '.trigger',
+    content: ".content",
+    trigger: ".trigger",
   },
 };
 

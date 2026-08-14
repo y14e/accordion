@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.0.3
+ * @version 2.0.4
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -38,9 +38,9 @@ export interface AccordionOptions {
 }
 
 type Binding = {
-  trigger: HTMLElement;
-  content: HTMLElement;
   animation: Animation | null;
+  content: HTMLElement;
+  trigger: HTMLElement;
 };
 
 // -----------------------------------------------------------------------------
@@ -364,7 +364,7 @@ export default class Accordion {
   }
 
   #createBinding(trigger: HTMLElement, content: HTMLElement): Binding {
-    return { trigger, content, animation: null };
+    return { animation: null, content, trigger };
   }
 
   #isFocusable(element: HTMLElement): boolean {
