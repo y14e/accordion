@@ -1,34 +1,33 @@
-name: Publish to npm
+name: Publish
 
 on:
   release:
     types: [published]
 
+permissions:
+  id-token: write
+  contents: read
+
 jobs:
   publish:
     runs-on: ubuntu-latest
 
-    permissions:
-      contents: read
-      id-token: write
-
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v6
         with:
-          node-version: 24
-          cache: npm
+          node-version: '24'
+          registry-url: 'https://registry.npmjs.org'
+          package-manager-cache: false
 
-      - run: npm install -g npm@latest
+      - run: npm ci
 
-      - name: Debug OIDC
+      - name: Check environment
         run: |
           node --version
           npm --version
-          echo "ACTIONS_ID_TOKEN_REQUEST_URL=${ACTIONS_ID_TOKEN_REQUEST_URL:+present}"
-          echo "ACTIONS_ID_TOKEN_REQUEST_TOKEN=${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+present}"
-
-      - run: npm ci
+          test -n "$ACTIONS_ID_TOKEN_REQUEST_URL" && echo "OIDC URL: OK" || echo "OIDC URL: MISSING"
+          test -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" && echo "OIDC TOKEN: OK" || echo "OIDC TOKEN: MISSING"
 
       - run: npm publish --access public
