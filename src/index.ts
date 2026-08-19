@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.0.4
+ * @version 2.0.5
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -13,11 +13,7 @@
 // import
 // -----------------------------------------------------------------------------
 
-import {
-  addTokenToAttribute,
-  restoreAttributes,
-  saveAttributes,
-} from '@y14e/attributes-utils';
+import * as util from '@y14e/attribute-util';
 import Button from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
 
@@ -161,7 +157,10 @@ export default class Accordion {
 
     this.#animationController?.abort();
     this.#animationController = null;
-    restoreAttributes([...this.#triggerElements, ...this.#contentElements]);
+    util.restoreAttributes([
+      ...this.#triggerElements,
+      ...this.#contentElements,
+    ]);
     this.#triggerElements.length = 0;
     this.#contentElements.length = 0;
     this.#rootElement.removeAttribute('data-accordion-initialized');
@@ -181,14 +180,18 @@ export default class Accordion {
   }
 
   #initialize(): void {
-    saveAttributes(this.#triggerElements, [
+    util.saveAttributes(this.#triggerElements, [
       'aria-controls',
       'aria-disabled',
       'id',
       'style',
       'tabindex',
     ]);
-    saveAttributes(this.#contentElements, ['aria-labelledby', 'id', 'role']);
+    util.saveAttributes(this.#contentElements, [
+      'aria-labelledby',
+      'id',
+      'role',
+    ]);
     this.#eventController = new AbortController();
     const { signal } = this.#eventController;
 
@@ -201,7 +204,7 @@ export default class Accordion {
       }
 
       content.id ||= `accordion-content-${id}`;
-      addTokenToAttribute(trigger, 'aria-controls', content.id);
+      util.addAttributeToken(trigger, 'aria-controls', content.id);
       trigger.setAttribute(
         'aria-expanded',
         String(trigger.ariaExpanded === 'true'),
@@ -215,7 +218,7 @@ export default class Accordion {
       }
 
       trigger.addEventListener('click', this.#onTriggerClick, { signal });
-      addTokenToAttribute(content, 'aria-labelledby', trigger.id);
+      util.addAttributeToken(content, 'aria-labelledby', trigger.id);
       content.setAttribute('role', 'region');
       content.addEventListener('beforematch', this.#onContentBeforeMatch, {
         signal,
