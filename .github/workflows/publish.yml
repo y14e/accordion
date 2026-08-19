@@ -12,22 +12,27 @@ jobs:
   publish:
     runs-on: ubuntu-latest
 
+    permissions:
+      contents: read
+      id-token: write
+
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v4
 
       - uses: actions/setup-node@v6
         with:
-          node-version: '24'
-          registry-url: 'https://registry.npmjs.org'
-          package-manager-cache: false
+          node-version: 24
+          registry-url: https://registry.npmjs.org/
+
+      - run: npm install -g npm@latest
 
       - run: npm ci
 
-      - name: Check environment
+      - name: Debug
         run: |
           node --version
           npm --version
-          test -n "$ACTIONS_ID_TOKEN_REQUEST_URL" && echo "OIDC URL: OK" || echo "OIDC URL: MISSING"
-          test -n "$ACTIONS_ID_TOKEN_REQUEST_TOKEN" && echo "OIDC TOKEN: OK" || echo "OIDC TOKEN: MISSING"
+          echo "OIDC_URL=${ACTIONS_ID_TOKEN_REQUEST_URL:+present}"
+          echo "OIDC_TOKEN=${ACTIONS_ID_TOKEN_REQUEST_TOKEN:+present}"
 
-      - run: npm publish --access public
+      - run: npm publish --access public --verbose
