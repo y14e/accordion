@@ -14,7 +14,7 @@
 // -----------------------------------------------------------------------------
 
 import * as util from '@y14e/attribute-util';
-import Button from '@y14e/button';
+import { Button } from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
 
 // -----------------------------------------------------------------------------
