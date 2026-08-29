@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.0.7
+ * @version 2.0.8
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -13,7 +13,7 @@
 // import
 // -----------------------------------------------------------------------------
 
-import * as util from '@y14e/attribute-util';
+import * as utils from '@y14e/attribute-utils';
 import { Button } from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
 
@@ -157,7 +157,7 @@ export class Accordion {
 
     this.#animationController?.abort();
     this.#animationController = null;
-    util.restoreAttributes([
+    utils.restoreAttributes([
       ...this.#triggerElements,
       ...this.#contentElements,
     ]);
@@ -180,14 +180,14 @@ export class Accordion {
   }
 
   #initialize(): void {
-    util.saveAttributes(this.#triggerElements, [
+    utils.saveAttributes(this.#triggerElements, [
       'aria-controls',
       'aria-disabled',
       'id',
       'style',
       'tabindex',
     ]);
-    util.saveAttributes(this.#contentElements, [
+    utils.saveAttributes(this.#contentElements, [
       'aria-labelledby',
       'id',
       'role',
@@ -204,7 +204,7 @@ export class Accordion {
       }
 
       content.id ||= `accordion-content-${id}`;
-      util.addAttributeToken(trigger, 'aria-controls', content.id);
+      utils.addAttributeToken(trigger, 'aria-controls', content.id);
       trigger.setAttribute(
         'aria-expanded',
         String(trigger.ariaExpanded === 'true'),
@@ -218,7 +218,7 @@ export class Accordion {
       }
 
       trigger.addEventListener('click', this.#onTriggerClick, { signal });
-      util.addAttributeToken(content, 'aria-labelledby', trigger.id);
+      utils.addAttributeToken(content, 'aria-labelledby', trigger.id);
       content.setAttribute('role', 'region');
       content.addEventListener('beforematch', this.#onContentBeforeMatch, {
         signal,
