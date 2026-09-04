@@ -48,7 +48,10 @@ export class Accordion {
 
   #rootElement!: HTMLElement;
   #defaults = {
-    animation: { duration: 300, easing: 'ease' },
+    animation: {
+      duration: 300,
+      easing: 'ease',
+    },
     collapsible: true,
     selector: {
       content: '[data-accordion-content]',
