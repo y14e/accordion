@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.0.9
+ * @version 2.0.10
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -381,12 +381,57 @@ export class Accordion {
     target: AccordionOptions,
     source: Partial<AccordionOptions>,
   ): AccordionOptions {
-    return {
+    const merged = {
       ...target,
       ...source,
       animation: { ...target.animation, ...(source.animation ?? {}) },
       selector: { ...target.selector, ...(source.selector ?? {}) },
     };
+    const animation = merged.animation;
+    const duration = animation.duration;
+
+    if (typeof duration !== 'number' || Number.isNaN(duration)) {
+      const duration = this.#defaults.animation.duration;
+      console.warn(`Invalid animation duration. Fallback: ${duration} (ms).`);
+      animation.duration = duration;
+    }
+
+    if (duration < 0) {
+      console.warn('Invalid animation duration. Fallback: 0 (ms).');
+      animation.duration = 0;
+    }
+
+    if (!CSS.supports('animation-timing-function', animation.easing)) {
+      const easing = this.#defaults.animation.easing;
+      console.warn(`Invalid animation easing. Fallback: '${easing}'.`);
+      animation.easing = easing;
+    }
+
+    if (typeof merged.collapsible !== 'boolean') {
+      const collapsible = this.#defaults.collapsible;
+      console.warn(`Invalid collapsible option. Fallback: ${collapsible}.`);
+      merged.collapsible = collapsible;
+    }
+
+    const selector = merged.selector;
+
+    try {
+      document.querySelector(selector.content);
+    } catch {
+      const content = this.#defaults.selector.content;
+      console.warn(`Invalid content selector. Fallback: '${content}'.`);
+      selector.content = content;
+    }
+
+    try {
+      document.querySelector(selector.trigger);
+    } catch {
+      const trigger = this.#defaults.selector.trigger;
+      console.warn(`Invalid trigger selector. Fallback: '${trigger}'.`);
+      selector.trigger = trigger;
+    }
+
+    return merged;
   }
 
   async #waitAnimationsFinish(): Promise<void> {
