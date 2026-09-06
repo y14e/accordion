@@ -10,14 +10,14 @@ npm i @y14e/accordion
 
 ```ts
 // npm
-import { Accordion } from "@y14e/accordion";
+import { Accordion } from '@y14e/accordion';
 
 // CDNs
-import { Accordion } from "https://esm.sh/@y14e/accordion@2.0.14";
+import { Accordion } from 'https://esm.sh/@y14e/accordion@2.0.14';
 // or
-import { Accordion } from "https://cdn.jsdelivr.net/npm/@y14e/accordion@2.0.14/+esm";
+import { Accordion } from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@2.0.14/+esm';
 // or
-import { Accordion } from "https://esm.unpkg.com/@y14e/accordion@2.0.14";
+import { Accordion } from 'https://esm.unpkg.com/@y14e/accordion@2.0.14';
 ```
 
 ## Usage
@@ -51,15 +51,15 @@ interface AccordionOptions {
 Override the global default settings applied to all accordion instances.
 
 ```ts
-import { Accordion } from "@y14e/accordion";
+import { Accordion } from '@y14e/accordion';
 
 Accordion.defaults = {
   animation: {
     duration: 1000,
   },
   selector: {
-    content: ".content",
-    trigger: ".trigger",
+    content: '.content',
+    trigger: '.trigger',
   },
 };
 
