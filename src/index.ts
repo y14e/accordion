@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.0.11
+ * @version 2.0.12
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -79,8 +79,8 @@ export class Accordion {
     }
 
     this.#rootElement = root;
-    this.#defaults = this.#mergeOptions(this.#defaults, Accordion.defaults);
-    this.#settings = this.#mergeOptions(this.#defaults, options);
+    this.#defaults = this.#resolveOptions(this.#defaults, Accordion.defaults);
+    this.#settings = this.#resolveOptions(this.#defaults, options);
     matchMedia('(prefers-reduced-motion: reduce)').matches &&
       Object.assign(this.#settings.animation, { duration: 0 });
     const { trigger, content } = this.#settings.selector;
@@ -377,7 +377,7 @@ export class Accordion {
     return !element.hasAttribute('disabled') && element.tabIndex >= 0;
   }
 
-  #mergeOptions(
+  #resolveOptions(
     target: AccordionOptions,
     source: Partial<AccordionOptions>,
   ): AccordionOptions {
