@@ -411,30 +411,21 @@ export class Accordion {
       merged.collapsible = collapsible;
     }
 
-    const selector = merged.selector;
+    const mergedSelector = merged.selector;
+    const defaultSelector = defaults.selector;
 
-    function resolveSelector(
-      name: string,
-      target: string,
-      source: string,
-    ): string {
+    for (const key of Object.keys(
+      defaultSelector,
+    ) as (keyof typeof defaultSelector)[]) {
       try {
-        document.querySelector(source);
-        return source;
+        document.querySelector(mergedSelector[key]);
       } catch {
+        const selector = defaultSelector[key];
         console.warn(
-          `Invalid ${name.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${target}'.`,
+          `Invalid ${key.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${selector}'.`,
         );
-        return target;
+        mergedSelector[key] = selector;
       }
-    }
-
-    for (const name of ['content', 'trigger'] as const) {
-      selector[name] = resolveSelector(
-        name,
-        defaults.selector[name],
-        selector[name],
-      );
     }
 
     return merged;
