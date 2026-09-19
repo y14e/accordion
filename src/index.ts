@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.1.2
+ * @version 2.1.3
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -411,23 +411,30 @@ export class Accordion {
       merged.collapsible = collapsible;
     }
 
-    const mergedSelector = merged.selector;
-    const defaultSelector = defaults.selector;
+    const selector = merged.selector;
 
-    try {
-      document.querySelector(mergedSelector.content);
-    } catch {
-      const content = defaultSelector.content;
-      console.warn(`Invalid content selector. Fallback: '${content}'.`);
-      mergedSelector.content = content;
+    function resolveSelector(
+      name: string,
+      target: string,
+      source: string,
+    ): string {
+      try {
+        document.querySelector(source);
+        return source;
+      } catch {
+        console.warn(
+          `Invalid ${name.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${target}'.`,
+        );
+        return target;
+      }
     }
 
-    try {
-      document.querySelector(mergedSelector.trigger);
-    } catch {
-      const trigger = defaultSelector.trigger;
-      console.warn(`Invalid trigger selector. Fallback: '${trigger}'.`);
-      mergedSelector.trigger = trigger;
+    for (const name of ['content', 'trigger'] as const) {
+      selector[name] = resolveSelector(
+        name,
+        defaults.selector[name],
+        selector[name],
+      );
     }
 
     return merged;
