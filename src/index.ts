@@ -2,7 +2,7 @@
  * Accordion
  * WAI-ARIA compliant accordion pattern implementation in TypeScript.
  *
- * @version 2.1.6
+ * @version 2.1.7
  * @author Yusuke Kamiyamane
  * @license MIT
  * @copyright Copyright (c) Yusuke Kamiyamane
@@ -51,7 +51,7 @@ export class Accordion {
   static defaults: Partial<AccordionOptions> = {};
 
   #rootElement!: HTMLElement;
-  #defaults = {
+  #defaults: AccordionOptions = {
     animation: {
       duration: 300,
       easing: 'ease',
@@ -411,17 +411,17 @@ export class Accordion {
       merged.collapsible = collapsible;
     }
 
-    for (const [key, value] of Object.entries(defaults.selector)) {
+    for (const [name, value] of Object.entries(defaults.selector)) {
       const { selector } = merged;
-      const k = key as keyof typeof selector;
+      const n = name as keyof typeof selector;
 
       try {
-        document.querySelector(selector[k]);
+        document.querySelector(selector[n]);
       } catch {
         console.warn(
-          `Invalid ${k.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${value}'.`,
+          `Invalid ${n.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${value}'.`,
         );
-        selector[k] = value;
+        selector[n] = value;
       }
     }
 
@@ -445,7 +445,7 @@ export class Accordion {
 // -----------------------------------------------------------------------------
 
 function waitAnimationFinish(animation: Animation): Promise<void> {
-  return ['idle', 'finished'].includes(animation.playState)
+  return ['finished', 'idle'].includes(animation.playState)
     ? Promise.resolve()
     : new Promise((resolve) =>
         animation.addEventListener('finish', () => resolve(), { once: true }),
