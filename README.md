@@ -13,11 +13,11 @@ npm i @y14e/accordion
 import { Accordion } from '@y14e/accordion';
 
 // CDNs
-import { Accordion } from 'https://esm.sh/@y14e/accordion@2.1.7';
+import { Accordion } from 'https://esm.sh/@y14e/accordion@2.1.8';
 // or
-import { Accordion } from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@2.1.7/+esm';
+import { Accordion } from 'https://cdn.jsdelivr.net/npm/@y14e/accordion@2.1.8/+esm';
 // or
-import { Accordion } from 'https://esm.unpkg.com/@y14e/accordion@2.1.7';
+import { Accordion } from 'https://esm.unpkg.com/@y14e/accordion@2.1.8';
 ```
 
 ## Usage

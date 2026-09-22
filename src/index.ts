@@ -1,18 +1,3 @@
-/**
- * Accordion
- * WAI-ARIA compliant accordion pattern implementation in TypeScript.
- *
- * @version 2.1.7
- * @author Yusuke Kamiyamane
- * @license MIT
- * @copyright Copyright (c) Yusuke Kamiyamane
- * @see {@link https://github.com/y14e/accordion}
- */
-
-// -----------------------------------------------------------------------------
-// import
-// -----------------------------------------------------------------------------
-
 import {
   addAttributeToken,
   restoreAttributes,
@@ -20,10 +5,6 @@ import {
 } from '@y14e/attribute-utils';
 import { Button } from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
-
-// -----------------------------------------------------------------------------
-// Types
-// -----------------------------------------------------------------------------
 
 export interface AccordionOptions {
   animation: {
@@ -42,10 +23,6 @@ type Binding = {
   content: HTMLElement;
   trigger: HTMLElement;
 };
-
-// -----------------------------------------------------------------------------
-// APIs
-// -----------------------------------------------------------------------------
 
 export class Accordion {
   static defaults: Partial<AccordionOptions> = {};
@@ -439,10 +416,6 @@ export class Accordion {
     await Promise.allSettled(promises);
   }
 }
-
-// -----------------------------------------------------------------------------
-// Utils
-// -----------------------------------------------------------------------------
 
 function waitAnimationFinish(animation: Animation): Promise<void> {
   return ['finished', 'idle'].includes(animation.playState)
