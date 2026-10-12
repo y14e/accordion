@@ -5,41 +5,16 @@ import {
 } from '@y14e/attribute-utils';
 import { Button } from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
-
-export interface AccordionOptions {
-  animation: {
-    duration: number;
-    easing: string;
-  };
-  collapsible: boolean;
-  selector: {
-    content: string;
-    trigger: string;
-  };
-}
-
-type Binding = {
-  animation: Animation | null;
-  content: HTMLElement;
-  trigger: HTMLElement;
-};
+import { defaults } from '@/defaults';
+import { resolveOptions } from '@/options';
+import type { Binding, AccordionOptions as Options } from '@/types';
 
 export class Accordion {
-  static defaults: Partial<AccordionOptions> = {};
+  static defaults: Partial<Options> = {};
 
   #rootElement!: HTMLElement;
-  #defaults: AccordionOptions = {
-    animation: {
-      duration: 300,
-      easing: 'ease',
-    },
-    collapsible: true,
-    selector: {
-      content: '[data-accordion-content]',
-      trigger: '[data-accordion-trigger]',
-    },
-  };
-  #settings!: AccordionOptions;
+  #defaults = defaults;
+  #settings!: Options;
   #triggerElements!: HTMLElement[];
   #contentElements!: HTMLElement[];
   #bindings = new WeakMap<HTMLElement, Binding>();
@@ -49,7 +24,7 @@ export class Accordion {
   #buttons: Button[] = [];
   #isDestroyed = false;
 
-  constructor(root: HTMLElement, options: Partial<AccordionOptions> = {}) {
+  constructor(root: HTMLElement, options: Partial<Options> = {}) {
     if (!(root instanceof HTMLElement)) {
       throw new TypeError('Invalid root element');
     }
@@ -60,8 +35,8 @@ export class Accordion {
     }
 
     this.#rootElement = root;
-    this.#defaults = this.#resolveOptions(this.#defaults, Accordion.defaults);
-    this.#settings = this.#resolveOptions(this.#defaults, options);
+    this.#defaults = resolveOptions(this.#defaults, Accordion.defaults);
+    this.#settings = resolveOptions(this.#defaults, options);
     matchMedia('(prefers-reduced-motion: reduce)').matches &&
       Object.assign(this.#settings.animation, { duration: 0 });
     const { trigger, content } = this.#settings.selector;
@@ -350,61 +325,6 @@ export class Accordion {
     return !element.hasAttribute('disabled') && element.tabIndex >= 0;
   }
 
-  #resolveOptions(
-    target: AccordionOptions,
-    source: Partial<AccordionOptions>,
-  ): AccordionOptions {
-    const merged = {
-      ...target,
-      ...source,
-      animation: { ...target.animation, ...(source.animation ?? {}) },
-      selector: { ...target.selector, ...(source.selector ?? {}) },
-    };
-    const mergedAnimation = merged.animation;
-    const duration = mergedAnimation.duration;
-    const defaults = this.#defaults;
-    const defaultAnimation = defaults.animation;
-
-    if (typeof duration !== 'number' || Number.isNaN(duration)) {
-      const duration = defaultAnimation.duration;
-      console.warn(`Invalid animation duration. Fallback: ${duration} (ms).`);
-      mergedAnimation.duration = duration;
-    }
-
-    if (duration < 0) {
-      console.warn('Invalid animation duration. Fallback: 0 (ms).');
-      mergedAnimation.duration = 0;
-    }
-
-    if (!CSS.supports('animation-timing-function', mergedAnimation.easing)) {
-      const easing = defaultAnimation.easing;
-      console.warn(`Invalid animation easing. Fallback: '${easing}'.`);
-      mergedAnimation.easing = easing;
-    }
-
-    if (typeof merged.collapsible !== 'boolean') {
-      const collapsible = defaults.collapsible;
-      console.warn(`Invalid collapsible option. Fallback: ${collapsible}.`);
-      merged.collapsible = collapsible;
-    }
-
-    for (const [name, value] of Object.entries(defaults.selector)) {
-      const { selector } = merged;
-      const n = name as keyof typeof selector;
-
-      try {
-        document.querySelector(selector[n]);
-      } catch {
-        console.warn(
-          `Invalid ${n.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${value}'.`,
-        );
-        selector[n] = value;
-      }
-    }
-
-    return merged;
-  }
-
   async #waitAnimationsFinish(): Promise<void> {
     const promises: Promise<void>[] = [];
 
@@ -424,3 +344,5 @@ function waitAnimationFinish(animation: Animation): Promise<void> {
         animation.addEventListener('finish', () => resolve(), { once: true }),
       );
 }
+
+export type { Options as AccordionOptions };
