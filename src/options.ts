@@ -37,17 +37,21 @@ export function resolveOptions(
     merged.collapsible = collapsible;
   }
 
-  for (const [name, value] of Object.entries(defaults.selector)) {
+  const { selector } = defaults;
+
+  for (const [name, value] of Object.entries(selector) as [
+    keyof typeof selector,
+    string,
+  ][]) {
     const { selector } = merged;
-    const n = name as keyof typeof selector;
 
     try {
-      document.querySelector(selector[n]);
+      document.querySelector(selector[name]);
     } catch {
       console.warn(
-        `Invalid ${n.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${value}'.`,
+        `Invalid ${name.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${value}'.`,
       );
-      selector[n] = value;
+      selector[name] = value;
     }
   }
 

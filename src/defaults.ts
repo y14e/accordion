@@ -1,6 +1,6 @@
 import type { AccordionOptions as Options } from '@/types';
 
-export const defaults: Options = {
+export const defaults = {
   animation: {
     duration: 300,
     easing: 'ease',
@@ -10,4 +10,4 @@ export const defaults: Options = {
     content: '[data-accordion-content]',
     trigger: '[data-accordion-trigger]',
   },
-};
+} as const satisfies Options;

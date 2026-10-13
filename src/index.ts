@@ -13,7 +13,6 @@ export class Accordion {
   static defaults: Partial<Options> = {};
 
   #rootElement!: HTMLElement;
-  #defaults = defaults;
   #settings!: Options;
   #triggerElements!: HTMLElement[];
   #contentElements!: HTMLElement[];
@@ -35,8 +34,10 @@ export class Accordion {
     }
 
     this.#rootElement = root;
-    this.#defaults = resolveOptions(this.#defaults, Accordion.defaults);
-    this.#settings = resolveOptions(this.#defaults, options);
+    this.#settings = resolveOptions(
+      resolveOptions(defaults, Accordion.defaults),
+      options,
+    );
     matchMedia('(prefers-reduced-motion: reduce)').matches &&
       Object.assign(this.#settings.animation, { duration: 0 });
     const { trigger, content } = this.#settings.selector;
