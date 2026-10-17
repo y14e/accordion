@@ -54,7 +54,7 @@
     "esbuild": true
   },
   "dependencies": {
-    "@y14e/attribute-utils": "^2.0.16",
+    "@y14e/attribute-utils": "^2.0.18",
     "@y14e/button": "^1.0.10",
     "@y14e/roving-tabindex": "^3.4.1"
   }

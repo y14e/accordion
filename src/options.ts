@@ -1,4 +1,4 @@
-import type { AccordionOptions as Options } from '@/types';
+import type { AccordionOptions as Options } from './types';
 
 export function resolveOptions(
   defaults: Options,

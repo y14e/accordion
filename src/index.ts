@@ -5,9 +5,9 @@ import {
 } from '@y14e/attribute-utils';
 import { Button } from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
-import { defaults } from '@/defaults';
-import { resolveOptions } from '@/options';
-import type { Binding, AccordionOptions as Options } from '@/types';
+import { defaults } from './defaults';
+import { resolveOptions } from './options';
+import type { Binding, AccordionOptions as Options } from './types';
 
 export class Accordion {
   static defaults: Partial<Options> = {};
