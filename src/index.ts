@@ -72,8 +72,10 @@ export class Accordion {
       }
 
       const binding = this.#createBinding(trigger, content);
-      this.#bindings.set(trigger, binding);
-      this.#bindings.set(content, binding);
+
+      [trigger, content].forEach((element) => {
+        this.#bindings.set(element, binding);
+      });
     });
 
     this.#initialize();
