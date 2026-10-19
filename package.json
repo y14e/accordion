@@ -1,6 +1,6 @@
 {
   "name": "@y14e/accordion",
-  "version": "2.2.1",
+  "version": "2.2.2",
   "description": "WAI-ARIA compliant accordion pattern implementation in TypeScript",
   "keywords": [
     "a11y",
@@ -42,6 +42,12 @@
     "lint": "tsc --noEmit",
     "prepublishOnly": "npm run build"
   },
+  "dependencies": {
+    "@y14e/attribute-utils": "^2.0.18",
+    "@y14e/basen": "^1.0.14",
+    "@y14e/button": "^1.0.10",
+    "@y14e/roving-tabindex": "^3.4.1"
+  },
   "devDependencies": {
     "bun-types": "latest",
     "tsup": "^8.0.0",
@@ -52,10 +58,5 @@
   },
   "allowScripts": {
     "esbuild": true
-  },
-  "dependencies": {
-    "@y14e/attribute-utils": "^2.0.18",
-    "@y14e/button": "^1.0.10",
-    "@y14e/roving-tabindex": "^3.4.1"
   }
 }

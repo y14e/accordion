@@ -3,6 +3,7 @@ import {
   restoreAttributes,
   saveAttributes,
 } from '@y14e/attribute-utils';
+import { generateBase62Random } from '@y14e/basen';
 import { Button } from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
 import { defaults } from './defaults';
@@ -151,7 +152,7 @@ export class Accordion {
     const { signal } = this.#eventController;
 
     this.#triggerElements.forEach((trigger, i) => {
-      const id = Math.random().toString(36).slice(-8);
+      const id = generateBase62Random(4);
       const content = this.#contentElements[i];
 
       if (!content) {
