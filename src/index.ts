@@ -39,8 +39,11 @@ export class Accordion {
       resolveOptions(defaults, Accordion.defaults),
       options,
     );
-    matchMedia('(prefers-reduced-motion: reduce)').matches &&
-      Object.assign(this.#settings.animation, { duration: 0 });
+
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      this.#settings.animation.duration = 0;
+    }
+
     const { trigger, content } = this.#settings.selector;
     const NOT_NESTED = `:not(:scope ${content} *)`;
     this.#triggerElements = [
@@ -282,7 +285,7 @@ export class Accordion {
     }
 
     const { content } = binding;
-    const startSize = content.hidden ? 0 : content.offsetHeight;
+    const startSize = !content.hidden ? content.offsetHeight : 0;
 
     if (content.hidden) {
       content.hidden = false;
@@ -294,7 +297,7 @@ export class Accordion {
     const { duration, easing } = this.#settings.animation;
     const animation = content.animate(
       { blockSize: [`${startSize}px`, `${endSize}px`] },
-      { duration: isMatch ? 0 : duration, easing },
+      { duration: !isMatch ? duration : 0, easing },
     );
     binding.animation = animation;
     trigger.setAttribute('aria-expanded', String(isExpand));
