@@ -41,6 +41,7 @@ interface AccordionOptions {
   collapsible: boolean; // default: true
   selector: {
     content: string;    // default: '[data-accordion-content]'
+    item: string        // default: '[data-accordion-item]'
     trigger: string;    // default: '[data-accordion-trigger]'
   };
 }
@@ -59,6 +60,7 @@ Accordion.defaults = {
   },
   selector: {
     content: '.content',
+    item: '.item',
     trigger: '.trigger',
   },
 };
@@ -71,10 +73,10 @@ new Accordion(root);
 ### `collapse`
 
 ```ts
-accordion.collapse(trigger);
+accordion.collapse(item);
 // => void
 //
-// trigger: HTMLElement
+// item: HTMLElement
 ```
 
 ### `destroy`
@@ -91,10 +93,10 @@ accordion.destroy(force);
 ### `expand`
 
 ```ts
-accordion.expand(trigger);
+accordion.expand(item);
 // => void
 //
-// trigger: HTMLElement
+// item: HTMLElement
 ```
 
 ## Demo

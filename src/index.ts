@@ -15,6 +15,7 @@ export class Accordion {
 
   #rootElement!: HTMLElement;
   #settings!: Options;
+  #itemElements!: HTMLElement[];
   #triggerElements!: HTMLElement[];
   #contentElements!: HTMLElement[];
   #bindings = new WeakMap<HTMLElement, Binding>();
@@ -44,8 +45,19 @@ export class Accordion {
       this.#settings.animation.duration = 0;
     }
 
-    const { trigger, content } = this.#settings.selector;
+    const { item, trigger, content } = this.#settings.selector;
     const NOT_NESTED = `:not(:scope ${content} *)`;
+    this.#itemElements = [
+      ...this.#rootElement.querySelectorAll<HTMLElement>(
+        `${item}${NOT_NESTED}`,
+      ),
+    ];
+
+    if (!this.#itemElements.length) {
+      console.warn('Missing item elements');
+      return;
+    }
+
     this.#triggerElements = [
       ...this.#rootElement.querySelectorAll<HTMLElement>(
         `${trigger}${NOT_NESTED}`,
@@ -68,16 +80,17 @@ export class Accordion {
       return;
     }
 
-    this.#triggerElements.forEach((trigger, i) => {
+    this.#itemElements.forEach((item, i) => {
+      const trigger = this.#triggerElements[i];
       const content = this.#contentElements[i];
 
-      if (!content) {
+      if (!trigger || !content) {
         return;
       }
 
-      const binding = this.#createBinding(trigger, content);
+      const binding = this.#createBinding(item, trigger, content);
 
-      [trigger, content].forEach((element) => {
+      [item, trigger, content].forEach((element) => {
         this.#bindings.set(element, binding);
       });
     });
@@ -85,17 +98,17 @@ export class Accordion {
     this.#initialize();
   }
 
-  collapse(trigger: HTMLElement): void {
+  collapse(item: HTMLElement): void {
     if (this.#isDestroyed) {
       return;
     }
 
-    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
-      console.warn('Invalid trigger element');
+    if (!(item instanceof HTMLElement) || !this.#bindings.has(item)) {
+      console.warn('Invalid item element');
       return;
     }
 
-    this.#toggle(trigger, false);
+    this.#toggle(item, false);
   }
 
   async destroy(force = false): Promise<void> {
@@ -124,22 +137,23 @@ export class Accordion {
     this.#animationController?.abort();
     this.#animationController = null;
     restoreAttributes([...this.#triggerElements, ...this.#contentElements]);
+    this.#itemElements.length = 0;
     this.#triggerElements.length = 0;
     this.#contentElements.length = 0;
     this.#rootElement.removeAttribute('data-accordion-initialized');
   }
 
-  expand(trigger: HTMLElement): void {
+  expand(item: HTMLElement): void {
     if (this.#isDestroyed) {
       return;
     }
 
-    if (!(trigger instanceof HTMLElement) || !this.#bindings.has(trigger)) {
-      console.warn('Invalid trigger element');
+    if (!(item instanceof HTMLElement) || !this.#bindings.has(item)) {
+      console.warn('Invalid item element');
       return;
     }
 
-    this.#toggle(trigger, true);
+    this.#toggle(item, true);
   }
 
   #initialize(): void {
@@ -195,7 +209,7 @@ export class Accordion {
     this.#rootElement.setAttribute('data-accordion-initialized', '');
   }
 
-  #onTriggerClick = (event: Event): void => {
+  #onTriggerClick = (event: MouseEvent): void => {
     event.preventDefault();
     const trigger = event.currentTarget;
 
@@ -203,7 +217,8 @@ export class Accordion {
       return;
     }
 
-    this.#toggle(trigger, trigger.ariaExpanded === 'false');
+    const item = this.#bindings.get(trigger)?.item;
+    item && this.#toggle(item, trigger.ariaExpanded === 'false');
   };
 
   #onContentAnimationFinish(content: HTMLElement): void {
@@ -228,22 +243,24 @@ export class Accordion {
       return;
     }
 
-    const binding = this.#bindings.get(content);
+    const trigger = this.#bindings.get(content)?.trigger;
+    trigger?.ariaExpanded === 'false' && this.#toggle(content, true, true);
+  };
+
+  #toggle(
+    item: HTMLElement,
+    isExpand: boolean,
+    isMatch = false,
+    isProgrammatic = false,
+  ): void {
+    const binding = this.#bindings.get(item);
 
     if (!binding) {
       return;
     }
 
-    binding.trigger.ariaExpanded === 'false' &&
-      this.#toggle(binding.trigger, true, true);
-  };
+    const { trigger, content } = binding;
 
-  #toggle(
-    trigger: HTMLElement,
-    isExpand: boolean,
-    isMatch = false,
-    isProgrammatic = false,
-  ): void {
     if (trigger.ariaExpanded === String(isExpand)) {
       return;
     }
@@ -278,13 +295,6 @@ export class Accordion {
         '',
     );
 
-    const binding = this.#bindings.get(trigger);
-
-    if (!binding) {
-      return;
-    }
-
-    const { content } = binding;
     const startSize = !content.hidden ? content.offsetHeight : 0;
 
     if (content.hidden) {
@@ -324,8 +334,12 @@ export class Accordion {
     );
   }
 
-  #createBinding(trigger: HTMLElement, content: HTMLElement): Binding {
-    return { animation: null, content, trigger };
+  #createBinding(
+    item: HTMLElement,
+    trigger: HTMLElement,
+    content: HTMLElement,
+  ): Binding {
+    return { animation: null, content, item, trigger };
   }
 
   #isFocusable(element: HTMLElement): boolean {

@@ -6,6 +6,7 @@ export interface AccordionOptions {
   collapsible: boolean;
   selector: {
     content: string;
+    item: string;
     trigger: string;
   };
 }
@@ -13,5 +14,6 @@ export interface AccordionOptions {
 export type Binding = {
   animation: Animation | null;
   content: HTMLElement;
+  item: HTMLElement;
   trigger: HTMLElement;
 };

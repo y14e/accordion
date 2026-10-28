@@ -8,6 +8,7 @@ export const defaults = {
   collapsible: true,
   selector: {
     content: '[data-accordion-content]',
+    item: '[data-accordion-item]',
     trigger: '[data-accordion-trigger]',
   },
 } as const satisfies Options;
