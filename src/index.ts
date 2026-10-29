@@ -180,7 +180,7 @@ export class Accordion {
       addAttributeToken(trigger, 'aria-controls', content.id);
       trigger.setAttribute(
         'aria-expanded',
-        String(trigger.ariaExpanded === 'true'),
+        `${trigger.ariaExpanded === 'true'}`,
       );
       trigger.id ||= `accordion-trigger-${id}`;
 
@@ -261,7 +261,7 @@ export class Accordion {
 
     const { trigger, content } = binding;
 
-    if (trigger.ariaExpanded === String(isExpand)) {
+    if (trigger.ariaExpanded === `${isExpand}`) {
       return;
     }
 
@@ -310,7 +310,7 @@ export class Accordion {
       { duration: !isMatch ? duration : 0, easing },
     );
     binding.animation = animation;
-    trigger.setAttribute('aria-expanded', String(isExpand));
+    trigger.setAttribute('aria-expanded', `${isExpand}`);
 
     function cleanup(): void {
       if (binding?.animation === animation) {
