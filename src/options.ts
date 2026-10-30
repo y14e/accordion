@@ -1,9 +1,6 @@
 import type { AccordionOptions as Options } from './types';
 
-export function resolveOptions(
-  defaults: Options,
-  source: Partial<Options>,
-): Options {
+export function resolveOptions(defaults: Options, source: Partial<Options>): Options {
   const merged = {
     ...defaults,
     ...source,
@@ -39,10 +36,7 @@ export function resolveOptions(
 
   const { selector } = defaults;
 
-  for (const [name, value] of Object.entries(selector) as [
-    keyof typeof selector,
-    string,
-  ][]) {
+  for (const [name, value] of Object.entries(selector) as [keyof typeof selector, string][]) {
     const { selector } = merged;
 
     try {

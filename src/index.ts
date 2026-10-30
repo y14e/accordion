@@ -1,8 +1,4 @@
-import {
-  addAttributeToken,
-  restoreAttributes,
-  saveAttributes,
-} from '@y14e/attribute-utils';
+import { addAttributeToken, restoreAttributes, saveAttributes } from '@y14e/attribute-utils';
 import { generateBase62Random } from '@y14e/basen';
 import { Button } from '@y14e/button';
 import { createRovingTabIndex } from '@y14e/roving-tabindex';
@@ -36,10 +32,7 @@ export class Accordion {
     }
 
     this.#rootElement = root;
-    this.#settings = resolveOptions(
-      resolveOptions(defaults, Accordion.defaults),
-      options,
-    );
+    this.#settings = resolveOptions(resolveOptions(defaults, Accordion.defaults), options);
 
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
       this.#settings.animation.duration = 0;
@@ -48,9 +41,7 @@ export class Accordion {
     const { item, trigger, content } = this.#settings.selector;
     const NOT_NESTED = `:not(:scope ${content} *)`;
     this.#itemElements = [
-      ...this.#rootElement.querySelectorAll<HTMLElement>(
-        `${item}${NOT_NESTED}`,
-      ),
+      ...this.#rootElement.querySelectorAll<HTMLElement>(`${item}${NOT_NESTED}`),
     ];
 
     if (!this.#itemElements.length) {
@@ -59,9 +50,7 @@ export class Accordion {
     }
 
     this.#triggerElements = [
-      ...this.#rootElement.querySelectorAll<HTMLElement>(
-        `${trigger}${NOT_NESTED}`,
-      ),
+      ...this.#rootElement.querySelectorAll<HTMLElement>(`${trigger}${NOT_NESTED}`),
     ];
 
     if (!this.#triggerElements.length) {
@@ -70,9 +59,7 @@ export class Accordion {
     }
 
     this.#contentElements = [
-      ...this.#rootElement.querySelectorAll<HTMLElement>(
-        `${content}${NOT_NESTED}`,
-      ),
+      ...this.#rootElement.querySelectorAll<HTMLElement>(`${content}${NOT_NESTED}`),
     ];
 
     if (!this.#contentElements.length) {
@@ -178,10 +165,7 @@ export class Accordion {
 
       content.id ||= `accordion-content-${id}`;
       addAttributeToken(trigger, 'aria-controls', content.id);
-      trigger.setAttribute(
-        'aria-expanded',
-        `${trigger.ariaExpanded === 'true'}`,
-      );
+      trigger.setAttribute('aria-expanded', `${trigger.ariaExpanded === 'true'}`);
       trigger.id ||= `accordion-trigger-${id}`;
 
       if (!this.#isFocusable(trigger)) {
@@ -193,9 +177,7 @@ export class Accordion {
       trigger.addEventListener('click', this.#onTriggerClick, { signal });
       addAttributeToken(content, 'aria-labelledby', trigger.id);
       content.setAttribute('role', 'region');
-      content.addEventListener('beforematch', this.#onContentBeforeMatch, {
-        signal,
-      });
+      content.addEventListener('beforematch', this.#onContentBeforeMatch, { signal });
       this.#buttons.push(new Button(trigger));
     });
 
@@ -228,8 +210,7 @@ export class Accordion {
       return;
     }
 
-    trigger.ariaExpanded === 'false' &&
-      content.setAttribute('hidden', 'until-found');
+    trigger.ariaExpanded === 'false' && content.setAttribute('hidden', 'until-found');
 
     for (const name of ['block-size', 'overflow']) {
       content.style.removeProperty(name);
@@ -247,12 +228,7 @@ export class Accordion {
     trigger?.ariaExpanded === 'false' && this.#toggle(content, true, true);
   };
 
-  #toggle(
-    item: HTMLElement,
-    isExpand: boolean,
-    isMatch = false,
-    isProgrammatic = false,
-  ): void {
+  #toggle(item: HTMLElement, isExpand: boolean, isMatch = false, isProgrammatic = false): void {
     const binding = this.#bindings.get(item);
 
     if (!binding) {
@@ -288,9 +264,7 @@ export class Accordion {
 
     trigger.setAttribute(
       'aria-label',
-      trigger.getAttribute(
-        `data-accordion-${isExpand ? 'expanded' : 'collapsed'}-label`,
-      ) ??
+      trigger.getAttribute(`data-accordion-${isExpand ? 'expanded' : 'collapsed'}-label`) ??
         trigger.ariaLabel ??
         '',
     );
@@ -334,11 +308,7 @@ export class Accordion {
     );
   }
 
-  #createBinding(
-    item: HTMLElement,
-    trigger: HTMLElement,
-    content: HTMLElement,
-  ): Binding {
+  #createBinding(item: HTMLElement, trigger: HTMLElement, content: HTMLElement): Binding {
     return { animation: null, content, item, trigger };
   }
 
