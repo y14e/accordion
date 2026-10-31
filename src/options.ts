@@ -42,9 +42,7 @@ export function resolveOptions(defaults: Options, source: Partial<Options>): Opt
     try {
       document.querySelector(selector[name]);
     } catch {
-      console.warn(
-        `Invalid ${name.replace(/[A-Z]/g, (c) => ` ${c.toLowerCase()}`)} selector. Fallback: '${value}'.`,
-      );
+      console.warn(`Invalid ${name} selector. Fallback: '${value}'.`);
       selector[name] = value;
     }
   }
