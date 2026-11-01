@@ -175,10 +175,10 @@ export class Accordion {
       }
 
       trigger.addEventListener('click', this.#onTriggerClick, { signal });
+      this.#buttons.push(new Button(trigger));
       addAttributeToken(content, 'aria-labelledby', trigger.id);
       content.setAttribute('role', 'region');
       content.addEventListener('beforematch', this.#onContentBeforeMatch, { signal });
-      this.#buttons.push(new Button(trigger));
     });
 
     const { trigger, content } = this.#settings.selector;
