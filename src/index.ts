@@ -212,7 +212,7 @@ export class Accordion {
 
     trigger.ariaExpanded === 'false' && content.setAttribute('hidden', 'until-found');
 
-    for (const name of ['block-size', 'overflow']) {
+    for (const name of ['block-size', 'overflow'] as const) {
       content.style.removeProperty(name);
     }
   }

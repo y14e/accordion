@@ -1,5 +1,11 @@
 import type { AccordionOptions as Options } from './types';
 
+interface ObjectCtor extends ObjectConstructor {
+  entries<K extends PropertyKey, V>(o: Record<K, V>): [K, V][];
+}
+
+const OBJECT_CTOR: ObjectCtor = Object;
+
 export function resolveOptions(defaults: Options, source: Partial<Options>): Options {
   const merged = {
     ...defaults,
@@ -36,7 +42,7 @@ export function resolveOptions(defaults: Options, source: Partial<Options>): Opt
 
   const { selector } = defaults;
 
-  for (const [name, value] of Object.entries(selector) as [keyof typeof selector, string][]) {
+  for (const [name, value] of OBJECT_CTOR.entries(selector)) {
     const { selector } = merged;
 
     try {
