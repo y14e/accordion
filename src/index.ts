@@ -90,7 +90,7 @@ export class Accordion {
       return;
     }
 
-    if (!(item instanceof HTMLElement) || !this.#bindings.has(item)) {
+    if (!this.#isValidItem(item)) {
       console.warn('Invalid item element');
       return;
     }
@@ -135,7 +135,7 @@ export class Accordion {
       return;
     }
 
-    if (!(item instanceof HTMLElement) || !this.#bindings.has(item)) {
+    if (!this.#isValidItem(item)) {
       console.warn('Invalid item element');
       return;
     }
@@ -314,6 +314,14 @@ export class Accordion {
 
   #isFocusable(element: HTMLElement): boolean {
     return !element.hasAttribute('disabled') && element.tabIndex >= 0;
+  }
+
+  #isValidItem(item: HTMLElement): boolean {
+    return (
+      item instanceof HTMLElement &&
+      this.#bindings.has(item) &&
+      item.matches(this.#settings.selector.item)
+    );
   }
 
   async #waitAnimationsFinish(): Promise<void> {
