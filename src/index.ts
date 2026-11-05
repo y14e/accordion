@@ -317,11 +317,7 @@ export class Accordion {
   }
 
   #isValidItem(item: HTMLElement): boolean {
-    return (
-      item instanceof HTMLElement &&
-      this.#bindings.has(item) &&
-      item.matches(this.#settings.selector.item)
-    );
+    return item.matches(this.#settings.selector.item) && this.#bindings.has(item);
   }
 
   async #waitAnimationsFinish(): Promise<void> {
