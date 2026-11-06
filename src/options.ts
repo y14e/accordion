@@ -40,11 +40,9 @@ export function resolveOptions(defaults: Options, source: Partial<Options>): Opt
     merged.collapsible = collapsible;
   }
 
-  const { selector } = defaults;
+  const { selector } = merged;
 
-  for (const [name, value] of OBJECT_CTOR.entries(selector)) {
-    const { selector } = merged;
-
+  for (const [name, value] of OBJECT_CTOR.entries(defaults.selector)) {
     try {
       document.querySelector(selector[name]);
     } catch {
