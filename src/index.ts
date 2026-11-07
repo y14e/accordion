@@ -85,7 +85,7 @@ export class Accordion {
     this.#initialize();
   }
 
-  collapse(item: HTMLElement): void {
+  close(item: HTMLElement): void {
     if (this.#isDestroyed) {
       return;
     }
@@ -130,7 +130,7 @@ export class Accordion {
     this.#rootElement.removeAttribute('data-accordion-initialized');
   }
 
-  expand(item: HTMLElement): void {
+  open(item: HTMLElement): void {
     if (this.#isDestroyed) {
       return;
     }
@@ -147,6 +147,7 @@ export class Accordion {
     saveAttributes(this.#triggerElements, [
       'aria-controls',
       'aria-disabled',
+      'aria-label',
       'id',
       'style',
       'tabindex',
@@ -165,7 +166,9 @@ export class Accordion {
 
       content.id ||= `accordion-content-${id}`;
       addAttributeToken(trigger, 'aria-controls', content.id);
-      trigger.setAttribute('aria-expanded', `${trigger.ariaExpanded === 'true'}`);
+      const isOpened = trigger.ariaExpanded === 'true';
+      trigger.setAttribute('aria-expanded', `${isOpened}`);
+      this.#setLabel(trigger, isOpened);
       trigger.id ||= `accordion-trigger-${id}`;
 
       if (!this.#isFocusable(trigger)) {
@@ -228,7 +231,7 @@ export class Accordion {
     trigger?.ariaExpanded === 'false' && this.#toggle(content, true, true);
   };
 
-  #toggle(item: HTMLElement, isExpand: boolean, isMatch = false, isProgrammatic = false): void {
+  #toggle(item: HTMLElement, isOpen: boolean, isMatch = false, isProgrammatic = false): void {
     const binding = this.#bindings.get(item);
 
     if (!binding) {
@@ -237,12 +240,12 @@ export class Accordion {
 
     const { trigger, content } = binding;
 
-    if (trigger.ariaExpanded === `${isExpand}`) {
+    if (trigger.ariaExpanded === `${isOpen}`) {
       return;
     }
 
     if (
-      !isExpand &&
+      !isOpen &&
       !isProgrammatic &&
       !this.#settings.collapsible &&
       this.#triggerElements.filter((t) => t.ariaExpanded === 'true').length <= 1
@@ -252,30 +255,24 @@ export class Accordion {
 
     const name = trigger.getAttribute('data-accordion-name');
 
-    if (name && isExpand) {
-      const expanded = this.#triggerElements.find(
+    if (name && isOpen) {
+      const opened = this.#triggerElements.find(
         (t) =>
           t !== trigger &&
           t.getAttribute('data-accordion-name') === name &&
           t.ariaExpanded === 'true',
       );
-      expanded && this.#toggle(expanded, false, isMatch, true);
+      opened && this.#toggle(opened, false, isMatch, true);
     }
 
-    trigger.setAttribute(
-      'aria-label',
-      trigger.getAttribute(`data-accordion-${isExpand ? 'expanded' : 'collapsed'}-label`) ??
-        trigger.ariaLabel ??
-        '',
-    );
-
+    this.#setLabel(trigger, isOpen);
     const startSize = !content.hidden ? content.offsetHeight : 0;
 
     if (content.hidden) {
       content.hidden = false;
     }
 
-    const endSize = isExpand ? content.scrollHeight : 0;
+    const endSize = isOpen ? content.scrollHeight : 0;
     binding.animation?.cancel();
     content.style.setProperty('overflow', 'clip');
     const { duration, easing } = this.#settings.animation;
@@ -284,7 +281,7 @@ export class Accordion {
       { duration: !isMatch ? duration : 0, easing },
     );
     binding.animation = animation;
-    trigger.setAttribute('aria-expanded', `${isExpand}`);
+    trigger.setAttribute('aria-expanded', `${isOpen}`);
 
     function cleanup(): void {
       if (binding?.animation === animation) {
@@ -318,6 +315,11 @@ export class Accordion {
 
   #isValidItem(item: HTMLElement): boolean {
     return item.matches(this.#settings.selector.item) && this.#bindings.has(item);
+  }
+
+  #setLabel(trigger: HTMLElement, isOpen: boolean): void {
+    const label = trigger.getAttribute(`data-accordion-${isOpen ? 'opened' : 'closed'}-label`);
+    label && trigger.setAttribute('aria-label', label);
   }
 
   async #waitAnimationsFinish(): Promise<void> {

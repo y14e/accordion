@@ -70,10 +70,10 @@ new Accordion(root);
 
 ## 📦 APIs
 
-### `collapse`
+### `close`
 
 ```ts
-accordion.collapse(item);
+accordion.close(item);
 // => void
 //
 // item: HTMLElement
@@ -90,10 +90,10 @@ accordion.destroy(force);
 // force (optional): If true, skips waiting for animations to finish.
 ```
 
-### `expand`
+### `open`
 
 ```ts
-accordion.expand(item);
+accordion.open(item);
 // => void
 //
 // item: HTMLElement
