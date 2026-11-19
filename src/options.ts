@@ -1,10 +1,11 @@
 import type { AccordionOptions as Options } from './types';
 
 interface ObjectCtor extends ObjectConstructor {
-  entries<K extends PropertyKey, V>(o: Record<K, V>): [K, V][];
+  entries<K extends string, V>(o: { [P in K]?: V }): [K, V][];
 }
 
-const OBJECT_CTOR: ObjectCtor = Object;
+// biome-ignore lint: enhanced type definitions for Object constructor
+declare const Object: ObjectCtor;
 
 export function resolveOptions(defaults: Options, source: Partial<Options>): Options {
   const merged = {
@@ -42,7 +43,7 @@ export function resolveOptions(defaults: Options, source: Partial<Options>): Opt
 
   const { selector } = merged;
 
-  for (const [name, value] of OBJECT_CTOR.entries(defaults.selector)) {
+  for (const [name, value] of Object.entries(defaults.selector)) {
     try {
       document.querySelector(selector[name]);
     } catch {
