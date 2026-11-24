@@ -23,10 +23,10 @@ import { Accordion } from 'https://esm.unpkg.com/@y14e/accordion@<x.x.x>';
 ## Usage
 
 ```ts
-new Accordion(root, options);
+new Accordion(element, options);
 // => Accordion
 //
-// root: HTMLElement
+// element: HTMLElement
 // options (optional): AccordionOptions
 ```
 
