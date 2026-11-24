@@ -9,7 +9,7 @@ import type { Binding, AccordionOptions as Options } from './types';
 export class Accordion {
   static defaults: Partial<Options> = {};
 
-  #rootElement!: HTMLElement;
+  #element!: HTMLElement;
   #settings!: Options;
   #itemElements!: HTMLElement[];
   #triggerElements!: HTMLElement[];
@@ -21,17 +21,17 @@ export class Accordion {
   #buttons: Button[] = [];
   #isDestroyed = false;
 
-  constructor(root: HTMLElement, options: Partial<Options> = {}) {
-    if (!(root instanceof HTMLElement)) {
-      throw new TypeError('Invalid root element');
+  constructor(element: HTMLElement, options: Partial<Options> = {}) {
+    if (!(element instanceof HTMLElement)) {
+      throw new TypeError('Invalid element');
     }
 
-    if (root.hasAttribute('data-accordion-initialized')) {
+    if (element.hasAttribute('data-accordion-initialized')) {
       console.warn('Already initialized');
       return;
     }
 
-    this.#rootElement = root;
+    this.#element = element;
     this.#settings = resolveOptions(resolveOptions(defaults, Accordion.defaults), options);
 
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
@@ -40,9 +40,7 @@ export class Accordion {
 
     const { item, trigger, content } = this.#settings.selector;
     const NOT_NESTED = `:not(:scope ${content} *)`;
-    this.#itemElements = [
-      ...this.#rootElement.querySelectorAll<HTMLElement>(`${item}${NOT_NESTED}`),
-    ];
+    this.#itemElements = [...this.#element.querySelectorAll<HTMLElement>(`${item}${NOT_NESTED}`)];
 
     if (!this.#itemElements.length) {
       console.warn('Missing item elements');
@@ -50,7 +48,7 @@ export class Accordion {
     }
 
     this.#triggerElements = [
-      ...this.#rootElement.querySelectorAll<HTMLElement>(`${trigger}${NOT_NESTED}`),
+      ...this.#element.querySelectorAll<HTMLElement>(`${trigger}${NOT_NESTED}`),
     ];
 
     if (!this.#triggerElements.length) {
@@ -59,7 +57,7 @@ export class Accordion {
     }
 
     this.#contentElements = [
-      ...this.#rootElement.querySelectorAll<HTMLElement>(`${content}${NOT_NESTED}`),
+      ...this.#element.querySelectorAll<HTMLElement>(`${content}${NOT_NESTED}`),
     ];
 
     if (!this.#contentElements.length) {
@@ -127,7 +125,7 @@ export class Accordion {
     this.#itemElements.length = 0;
     this.#triggerElements.length = 0;
     this.#contentElements.length = 0;
-    this.#rootElement.removeAttribute('data-accordion-initialized');
+    this.#element.removeAttribute('data-accordion-initialized');
   }
 
   open(item: HTMLElement): void {
@@ -185,13 +183,13 @@ export class Accordion {
     });
 
     const { trigger, content } = this.#settings.selector;
-    this.#cleanupRovingTabIndex = createRovingTabIndex(this.#rootElement, {
+    this.#cleanupRovingTabIndex = createRovingTabIndex(this.#element, {
       direction: 'vertical',
       navigationOnly: true,
       selector: `${trigger}:not(:scope ${content} *)`,
       wrap: true,
     });
-    this.#rootElement.setAttribute('data-accordion-initialized', '');
+    this.#element.setAttribute('data-accordion-initialized', '');
   }
 
   #onTriggerClick = (event: MouseEvent): void => {
